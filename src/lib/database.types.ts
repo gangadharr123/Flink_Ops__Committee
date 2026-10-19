@@ -77,6 +77,7 @@ export type Database = {
         Row: {
           category: Database["public"]["Enums"]["issue_category"]
           created_at: string
+          description: string | null
           exclude_from_outputs: boolean
           first_seen_visit_id: string | null
           hub_id: string
@@ -91,6 +92,7 @@ export type Database = {
         Insert: {
           category: Database["public"]["Enums"]["issue_category"]
           created_at?: string
+          description?: string | null
           exclude_from_outputs?: boolean
           first_seen_visit_id?: string | null
           hub_id: string
@@ -105,6 +107,7 @@ export type Database = {
         Update: {
           category?: Database["public"]["Enums"]["issue_category"]
           created_at?: string
+          description?: string | null
           exclude_from_outputs?: boolean
           first_seen_visit_id?: string | null
           hub_id?: string
@@ -411,6 +414,18 @@ export type Database = {
       }
     }
     Views: {
+      issue_stats: {
+        Row: {
+          days_open: number | null
+          first_seen_date: string | null
+          is_recurring: boolean | null
+          issue_id: string | null
+          last_seen_date: string | null
+          resolved_date: string | null
+          visits_seen: number | null
+        }
+        Relationships: []
+      }
       staff_topics: {
         Row: {
           topic: string | null
@@ -421,9 +436,12 @@ export type Database = {
     }
     Functions: {
       can_edit_visits: { Args: never; Returns: boolean }
+      create_issue: { Args: { p_visit_id: string; p_category: Database["public"]["Enums"]["issue_category"]; p_title: string; p_severity: Database["public"]["Enums"]["issue_severity"]; p_description?: string }; Returns: string }
       create_visit: { Args: { p_hub_id: string; p_visit_date: string }; Returns: string }
       current_user_role: { Args: never; Returns: Database["public"]["Enums"]["user_role"] }
       is_admin: { Args: never; Returns: boolean }
+      recurring_min_visits: { Args: never; Returns: number }
+      safe_uuid: { Args: { p_text: string }; Returns: string }
       visit_is_editable: { Args: { p_visit_id: string }; Returns: boolean }
     }
     Enums: {

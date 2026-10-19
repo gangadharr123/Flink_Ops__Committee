@@ -51,7 +51,8 @@ const fns = await q(`
   select p.proname as name, pg_get_function_result(p.oid) as result,
     coalesce((select json_agg(json_build_object('name', a.name, 'type', format_type(a.type, null)) order by a.ord)
               from unnest(p.proargnames[1:p.pronargs], p.proargtypes::oid[]) with ordinality a(name, type, ord)),
-             '[]') as args
+             '[]') as args,
+    p.pronargdefaults as ndefaults
   from pg_proc p join pg_namespace n on n.oid = p.pronamespace
   where n.nspname = 'public' and pg_get_function_result(p.oid) <> 'trigger'
   order by p.proname`);
@@ -131,7 +132,10 @@ ${I(6)}}
 
 const fnTs = fns.map((f) => {
   const args = f.args.length
-    ? `{ ${f.args.map((a) => `${a.name}: ${fnType(a.type)}`).join("; ")} }`
+    ? // the last `ndefaults` arguments have defaults, so they are optional
+      `{ ${f.args
+        .map((a, i) => `${a.name}${i >= f.args.length - f.ndefaults ? "?" : ""}: ${fnType(a.type)}`)
+        .join("; ")} }`
     : "never";
   return `${I(6)}${f.name}: { Args: ${args}; Returns: ${fnType(f.result)} }`;
 }).join("\n");
