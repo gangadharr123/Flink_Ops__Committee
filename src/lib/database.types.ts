@@ -333,6 +333,7 @@ export type Database = {
       visits: {
         Row: {
           created_at: string
+          current_step: Database["public"]["Enums"]["visit_step"]
           date_is_placeholder: boolean
           hub_id: string
           id: string
@@ -341,13 +342,16 @@ export type Database = {
           manager_present: boolean | null
           notes: string | null
           overall_impression: string | null
+          previous_visit_id: string | null
           status: Database["public"]["Enums"]["visit_status"]
+          submitted_at: string | null
           updated_at: string
           visit_date: string
           visit_number: number
         }
         Insert: {
           created_at?: string
+          current_step?: Database["public"]["Enums"]["visit_step"]
           date_is_placeholder?: boolean
           hub_id: string
           id?: string
@@ -356,13 +360,16 @@ export type Database = {
           manager_present?: boolean | null
           notes?: string | null
           overall_impression?: string | null
+          previous_visit_id?: string | null
           status?: Database["public"]["Enums"]["visit_status"]
+          submitted_at?: string | null
           updated_at?: string
           visit_date: string
           visit_number: number
         }
         Update: {
           created_at?: string
+          current_step?: Database["public"]["Enums"]["visit_step"]
           date_is_placeholder?: boolean
           hub_id?: string
           id?: string
@@ -371,7 +378,9 @@ export type Database = {
           manager_present?: boolean | null
           notes?: string | null
           overall_impression?: string | null
+          previous_visit_id?: string | null
           status?: Database["public"]["Enums"]["visit_status"]
+          submitted_at?: string | null
           updated_at?: string
           visit_date?: string
           visit_number?: number
@@ -391,16 +400,31 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "visits_previous_visit_id_fkey"
+            columns: ["previous_visit_id"]
+            isOneToOne: false
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
     Views: {
-      [_ in never]: never
+      staff_topics: {
+        Row: {
+          topic: string | null
+          uses: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       can_edit_visits: { Args: never; Returns: boolean }
+      create_visit: { Args: { p_hub_id: string; p_visit_date: string }; Returns: string }
       current_user_role: { Args: never; Returns: Database["public"]["Enums"]["user_role"] }
       is_admin: { Args: never; Returns: boolean }
+      visit_is_editable: { Args: { p_visit_id: string }; Returns: boolean }
     }
     Enums: {
       issue_category:
@@ -455,6 +479,11 @@ export type Database = {
       visit_status:
         | "draft"
         | "submitted"
+      visit_step:
+        | "shelves"
+        | "issues"
+        | "staff"
+        | "summary"
       zone_confidence:
         | "confirmed"
         | "assumed"
@@ -489,6 +518,7 @@ export const Constants = {
       staff_role: ["picker", "rider", "shift_lead", "manager", "other"],
       user_role: ["inspector", "viewer", "admin"],
       visit_status: ["draft", "submitted"],
+      visit_step: ["shelves", "issues", "staff", "summary"],
       zone_confidence: ["confirmed", "assumed", "check"],
     },
   },

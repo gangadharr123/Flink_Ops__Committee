@@ -26,11 +26,11 @@ const enums = await q(`
 const enumNames = new Set(enums.map((e) => e.name));
 
 const cols = await q(`
-  select c.table_name, c.column_name, c.data_type, c.udt_name, c.is_nullable,
+  select c.table_name, t.table_type, c.column_name, c.data_type, c.udt_name, c.is_nullable,
          c.column_default, c.is_identity, c.ordinal_position
   from information_schema.columns c
   join information_schema.tables t on t.table_schema = c.table_schema and t.table_name = c.table_name
-  where c.table_schema = 'public' and t.table_type = 'BASE TABLE'
+  where c.table_schema = 'public' and t.table_type in ('BASE TABLE', 'VIEW')
   order by c.table_name, c.column_name`);
 
 const fks = await q(`
@@ -48,7 +48,10 @@ const fks = await q(`
   order by con.conname`);
 
 const fns = await q(`
-  select p.proname as name, pg_get_function_result(p.oid) as result, p.pronargs as nargs
+  select p.proname as name, pg_get_function_result(p.oid) as result,
+    coalesce((select json_agg(json_build_object('name', a.name, 'type', format_type(a.type, null)) order by a.ord)
+              from unnest(p.proargnames[1:p.pronargs], p.proargtypes::oid[]) with ordinality a(name, type, ord)),
+             '[]') as args
   from pg_proc p join pg_namespace n on n.oid = p.pronamespace
   where n.nspname = 'public' and pg_get_function_result(p.oid) <> 'trigger'
   order by p.proname`);
@@ -71,10 +74,13 @@ function tsType(c) {
 const fnType = (r) => {
   if (enumNames.has(r)) return `Database["public"]["Enums"]["${r}"]`;
   if (r === "boolean") return "boolean";
-  throw new Error("unmapped fn result " + r);
+  if (r === "integer") return "number";
+  if (["uuid", "text", "date"].includes(r)) return "string";
+  throw new Error("unmapped fn type " + r);
 };
 
-const tables = [...new Set(cols.map((c) => c.table_name))].sort();
+const tables = [...new Set(cols.filter((c) => c.table_type === "BASE TABLE").map((c) => c.table_name))].sort();
+const views = [...new Set(cols.filter((c) => c.table_type === "VIEW").map((c) => c.table_name))].sort();
 const I = (n) => " ".repeat(n);
 let tablesTs = "";
 for (const t of tables) {
@@ -109,9 +115,25 @@ ${I(6)}}
 `;
 }
 
+// Views: read-only, and Postgres can't tell whether view columns are null.
+let viewsTs = "";
+for (const v of views) {
+  const vc = cols.filter((c) => c.table_name === v);
+  const row = vc.map((c) => `${I(10)}${c.column_name}: ${tsType(c)} | null`).join("\n");
+  viewsTs += `${I(6)}${v}: {
+${I(8)}Row: {
+${row}
+${I(8)}}
+${I(8)}Relationships: []
+${I(6)}}
+`;
+}
+
 const fnTs = fns.map((f) => {
-  if (f.nargs !== 0) throw new Error("function with args: " + f.name);
-  return `${I(6)}${f.name}: { Args: never; Returns: ${fnType(f.result)} }`;
+  const args = f.args.length
+    ? `{ ${f.args.map((a) => `${a.name}: ${fnType(a.type)}`).join("; ")} }`
+    : "never";
+  return `${I(6)}${f.name}: { Args: ${args}; Returns: ${fnType(f.result)} }`;
 }).join("\n");
 
 const enumTs = enums.map((e) => `${I(6)}${e.name}:\n${e.labels.map((l) => `${I(8)}| "${l}"`).join("\n")}`).join("\n");
@@ -134,8 +156,7 @@ export type Database = {
     Tables: {
 ${tablesTs}    }
     Views: {
-      [_ in never]: never
-    }
+${viewsTs || "      [_ in never]: never\n"}    }
     Functions: {
 ${fnTs}
     }
@@ -168,4 +189,4 @@ ${constTs}
 } as const
 `;
 writeFileSync(outPath, out);
-console.error(`tables: ${tables.length}, enums: ${enums.length}, functions: ${fns.length}`);
+console.error(`tables: ${tables.length}, views: ${views.length}, enums: ${enums.length}, functions: ${fns.length}`);
