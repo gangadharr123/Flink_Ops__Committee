@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { NavLinks } from "@/components/app-shell/nav-links";
+import { BottomNav, NavLinks } from "@/components/app-shell/nav-links";
 import {
   UserMenu,
   UserMenuSkeleton,
@@ -29,16 +29,12 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
           </Suspense>
         </header>
 
-        {/* Bottom padding keeps content clear of the phone tab bar. */}
+        {/* Bottom padding keeps content clear of the phone tab bar
+            (or the visit editor's Back / Next bar). */}
         <main className="flex-1 p-4 pb-24 md:p-8 md:pb-8">{children}</main>
       </div>
 
-      <nav
-        aria-label="Main"
-        className="fixed inset-x-0 bottom-0 z-10 border-t bg-background pb-[env(safe-area-inset-bottom)] md:hidden"
-      >
-        <NavLinks variant="bottom" />
-      </nav>
+      <BottomNav />
     </div>
   );
 }
