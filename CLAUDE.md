@@ -50,6 +50,7 @@ An issue lives across visits; each visit adds an issue_update (new / still open 
 - Commit after each working step with a clear message.
 
 ## Progress
-- Current phase: 1 (skeleton and login)
-- Done: Next.js 16 skeleton, magic-link login (invite-only), profiles migration with RLS, app shell (sidebar / bottom nav); core tables, RLS, hubs + shelves seed, generated types, RLS tests
+- Current phase: 3 done, next is 4 (issues)
+- Done: Next.js 16 skeleton, magic-link login (invite-only), profiles migration with RLS, app shell (sidebar / bottom nav); core tables, RLS, hubs + shelves seed, generated types, RLS tests; visit flow (list, new visit, 4-step editor with autosave, shelves, staff feedback, summary, submit, delete draft)
+- Visit editor: src/components/visit-editor/, pure logic in src/lib/visit-form.ts, saves via src/app/(app)/visits/actions.ts
 - Note: Next.js 16 uses src/proxy.ts (not middleware.ts) and Cache Components: session reads must sit inside <Suspense>
