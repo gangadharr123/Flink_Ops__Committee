@@ -1,35 +1,45 @@
+import type { Metadata } from "next";
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { formatDate } from "@/lib/format";
+import { VisitEditor } from "@/components/visit-editor/visit-editor";
+import { getCurrentUser } from "@/lib/auth";
+import { getVisitForEditor } from "@/lib/visits";
 
-// Temporary: replaced by the visit editor in the next step.
+export const metadata: Metadata = { title: "Visit" };
+
 export default function VisitPage({ params }: PageProps<"/visits/[id]">) {
   return (
-    <Suspense fallback={<div className="h-32 animate-pulse rounded-xl bg-muted" />}>
-      <Visit params={params} />
+    // The visit id (URL) and the session are request data, so the editor
+    // streams in behind this boundary.
+    <Suspense fallback={<EditorSkeleton />}>
+      <VisitLoader params={params} />
     </Suspense>
   );
 }
 
-async function Visit({ params }: { params: PageProps<"/visits/[id]">["params"] }) {
+async function VisitLoader({
+  params,
+}: {
+  params: PageProps<"/visits/[id]">["params"];
+}) {
   const { id } = await params;
-  const supabase = await createClient();
-  const { data: visit } = await supabase
-    .from("visits")
-    .select("label, visit_date, status, hub:hubs (name)")
-    .eq("id", id)
-    .maybeSingle();
-  if (!visit) notFound();
+  // Not a uuid: the database would reject it anyway, so 404 early.
+  if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
 
+  const [user, data] = await Promise.all([getCurrentUser(), getVisitForEditor(id)]);
+  if (!data) notFound();
+  const canEdit = user.role === "inspector" || user.role === "admin";
+
+  // key: after submitting, the editor starts fresh in read-only mode.
+  return <VisitEditor key={data.visit.status} data={data} canEdit={canEdit} />;
+}
+
+function EditorSkeleton() {
   return (
-    <div className="mx-auto max-w-3xl">
-      <h1 className="text-2xl font-semibold">
-        {visit.hub.name} · {visit.label}
-      </h1>
-      <p className="text-muted-foreground">
-        {formatDate(visit.visit_date)} · {visit.status}
-      </p>
+    <div className="mx-auto flex max-w-5xl flex-col gap-4">
+      <div className="h-12 animate-pulse rounded-lg bg-muted" />
+      <div className="h-8 animate-pulse rounded-lg bg-muted" />
+      <div className="h-96 animate-pulse rounded-xl bg-muted" />
     </div>
   );
 }
