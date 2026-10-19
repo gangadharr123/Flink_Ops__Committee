@@ -181,6 +181,8 @@ const newIssueSchema = z.object({
   title: z.string().trim().min(3, "Title is too short").max(200),
   severity: z.enum(Constants.public.Enums.issue_severity, "Pick a severity"),
   description: z.string().trim().max(5000),
+  // already uploaded by the browser to visit-photos/<visit id>/<uuid>.jpg
+  photoPath: z.string().optional(),
 });
 
 export type CreatedIssue = { id: string; key: string };
@@ -192,6 +194,9 @@ export async function createIssue(
 ): Promise<ActionState & { issue?: CreatedIssue }> {
   const parsed = newIssueSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
+  const { photoPath } = parsed.data;
+  const photoPattern = new RegExp(`^${visitId}/[0-9a-f-]{36}\\.jpg$`);
+  if (photoPath && !photoPattern.test(photoPath)) return { error: "Invalid photo." };
 
   const supabase = await createClient();
   const { data: id, error } = await supabase.rpc("create_issue", {
@@ -211,7 +216,20 @@ export async function createIssue(
     .select("issue_key")
     .eq("id", id)
     .single();
-  return { issue: { id, key: issue?.issue_key ?? "" } };
+  const created = { id, key: issue?.issue_key ?? "" };
+
+  if (photoPath) {
+    const { error: photoError } = await supabase
+      .from("photos")
+      .insert({ visit_id: visitId, issue_id: id, storage_path: photoPath });
+    if (photoError) {
+      // The issue is saved; only the photo link failed.
+      console.error("photo insert failed:", photoError.message);
+      await removeFiles(supabase, [photoPath]);
+      return { issue: created, error: "Issue saved, but the photo could not be attached." };
+    }
+  }
+  return { issue: created };
 }
 
 // Deletes an issue added on this (draft) visit, with its photo files.
