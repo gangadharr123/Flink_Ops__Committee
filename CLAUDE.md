@@ -14,6 +14,8 @@ Zero budget: open-source libraries and free tiers only. Never add a paid service
 - npm run dev     (local server at localhost:3000)
 - npm run build   (must pass before any commit)
 - npm run lint
+- npm test          (migrations + RLS tests in PGlite)
+- npm run db:types  (regenerate src/lib/database.types.ts after a migration)
 
 ## Structure
 - src/app/        pages and server routes
@@ -49,5 +51,5 @@ An issue lives across visits; each visit adds an issue_update (new / still open 
 
 ## Progress
 - Current phase: 1 (skeleton and login)
-- Done: Next.js 16 skeleton, magic-link login (invite-only), profiles migration with RLS, app shell (sidebar / bottom nav)
+- Done: Next.js 16 skeleton, magic-link login (invite-only), profiles migration with RLS, app shell (sidebar / bottom nav); core tables, RLS, hubs + shelves seed, generated types, RLS tests
 - Note: Next.js 16 uses src/proxy.ts (not middleware.ts) and Cache Components: session reads must sit inside <Suspense>

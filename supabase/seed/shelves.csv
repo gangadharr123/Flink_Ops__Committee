@@ -1,0 +1,141 @@
+hub,shelf_number,zone,zone_confidence,note
+Darmstadt,1,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,2,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,3,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,4,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,5,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,6,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,7,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,8,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,9,freezer,check,"Visit 2 notes called 9-15 freezers; Visit 3 sheet just says ""Decent"". Check."
+Darmstadt,10,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,11,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,12,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,13,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,14,fridge,check,"Visit 1 called it a fridge, Visit 2 notes called 9-15 freezers. Check."
+Darmstadt,15,fridge,check,"Visit 1 called it a fridge, Visit 2 notes called 9-15 freezers. Check."
+Darmstadt,16,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,17,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,18,fridge,confirmed,Visit 2 and 3 call it a fridge.
+Darmstadt,19,fridge,check,Visit 2 grouped it with fridges; Visit 3 sheet treats it as a normal shelf. Check.
+Darmstadt,20,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,21,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,22,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,23,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,24,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,25,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,26,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,27,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,28,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,29,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,30,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,31,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,32,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,33,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,34,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,35,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,36,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,37,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,38,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,39,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,40,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,41,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,42,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,43,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,44,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,45,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,46,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,47,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,48,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,49,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,50,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,51,dry,confirmed,Visit 2: dry goods.
+Darmstadt,52,dry,confirmed,Visit 2: dry goods.
+Darmstadt,53,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,54,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,55,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,56,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,57,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,58,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,59,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,60,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,61,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,62,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,63,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,64,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,65,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,66,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,67,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,68,fridge,confirmed,Described as a fridge in visit notes.
+Darmstadt,69,ambient,assumed,"Not described as fridge, freezer or dry goods in any visit."
+Darmstadt,70,fridge,confirmed,Described as a fridge in visit notes.
+Mainz,1,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,2,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,3,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,4,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,5,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,6,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,7,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,8,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,9,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,10,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,11,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,12,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,13,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,14,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,15,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,16,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,17,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,18,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,19,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,20,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,21,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,22,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,23,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,24,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,25,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,26,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,27,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,28,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,29,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,30,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,31,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,32,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,33,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,34,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,35,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,36,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,37,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,38,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,39,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,40,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,41,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,42,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,43,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,44,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,45,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,46,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,47,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,48,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,49,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,50,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,51,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,52,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,53,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,54,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,55,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,56,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,57,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,58,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,59,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,60,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,61,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,62,fridge,confirmed,7 Oct handwritten notes mark this range as fridge.
+Mainz,63,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,64,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,65,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,66,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,67,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,68,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,69,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.
+Mainz,70,ambient,assumed,Not marked as fridge in notes. Freezers are a separate unnumbered section.

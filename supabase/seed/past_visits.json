@@ -1,0 +1,1748 @@
+{
+  "format_version": 1,
+  "about": "HubCheck past visits for import. Built from visit reports, the Darmstadt Visit 3 spreadsheet and 7 Oct handwritten notes. Placeholders are marked date_is_placeholder or listed in README.md.",
+  "enums": {
+    "condition": [
+      "clean",
+      "minor_dust",
+      "dusty",
+      "mould",
+      "damaged"
+    ],
+    "severity": [
+      "low",
+      "medium",
+      "high",
+      "immediate"
+    ],
+    "issue_update_state": [
+      "new",
+      "still_open",
+      "improved",
+      "resolved"
+    ],
+    "staff_role": [
+      "picker",
+      "rider",
+      "shift_lead",
+      "manager",
+      "other"
+    ],
+    "issue_category": [
+      "ac_leaks",
+      "app_routing",
+      "batteries_chargers",
+      "bike_room",
+      "floor",
+      "fridge_freezer_equipment",
+      "other",
+      "process",
+      "rider_safety_gear",
+      "riders_room",
+      "shelf_hygiene",
+      "staff_welfare",
+      "water_filter"
+    ]
+  },
+  "visits": [
+    {
+      "visit_key": "D1",
+      "hub": "Darmstadt",
+      "visit_number": 1,
+      "visit_date": "2026-09-18",
+      "date_is_placeholder": true,
+      "label": "Visit 1",
+      "manager_present": null,
+      "overall_impression": "Best hub visited so far. Clean, smells good, open floor plan well used. Critical issues concentrated in the fridges (mould on trays, doors hard to open).",
+      "shelf_checks": [
+        {
+          "shelves": "1-32",
+          "condition": "minor_dust",
+          "score_5": null,
+          "comment": "Well organised, only minor cleaning needed."
+        },
+        {
+          "shelves": "33",
+          "condition": "mould",
+          "score_5": null,
+          "comment": "Mould on internal trays."
+        },
+        {
+          "shelves": "34",
+          "condition": "minor_dust",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "35",
+          "condition": "mould",
+          "score_5": null,
+          "comment": "Mould on internal trays."
+        },
+        {
+          "shelves": "36",
+          "condition": "minor_dust",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "37",
+          "condition": "mould",
+          "score_5": null,
+          "comment": "Mould on internal trays."
+        },
+        {
+          "shelves": "38-44",
+          "condition": "minor_dust",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "45",
+          "condition": "mould",
+          "score_5": null,
+          "comment": "Mould on internal trays."
+        },
+        {
+          "shelves": "46-70",
+          "condition": "minor_dust",
+          "score_5": null,
+          "comment": ""
+        }
+      ],
+      "staff_feedback": [
+        {
+          "staff_role": "picker",
+          "returning": false,
+          "tenure_note": "",
+          "points": "Likes colleagues and scheduling. Raised fridge door issues and mould in fridges 33, 35, 37, 45. Water filter not plugged in. Sanitary products often missing in washroom. Break room unusable because of toilet smell.",
+          "topics": [
+            "colleagues_positive",
+            "fridge_mould",
+            "fridge_doors",
+            "water_filter",
+            "sanitary_products",
+            "break_room"
+          ]
+        },
+        {
+          "staff_role": "picker",
+          "returning": false,
+          "tenure_note": "",
+          "points": "Likes colleagues and scheduling. No dedicated employee fridge. Wants better pay. Sanitary products often missing. Contract hours too low (12 h, wants 16 h).",
+          "topics": [
+            "colleagues_positive",
+            "employee_fridge",
+            "pay",
+            "sanitary_products",
+            "contract_hours"
+          ]
+        }
+      ],
+      "notes": "Riders not interviewed: hub busy. Pickup racks: 14 racks, rack 8 sticker missing."
+    },
+    {
+      "visit_key": "D2",
+      "hub": "Darmstadt",
+      "visit_number": 2,
+      "visit_date": "2026-10-01",
+      "date_is_placeholder": false,
+      "label": "Visit 2",
+      "manager_present": false,
+      "overall_impression": "About the same level as Visit 1. Stock organisation improved, but mould, water filter, AC leak and floor repairs remain unresolved.",
+      "shelf_checks": [
+        {
+          "shelves": "1-8",
+          "condition": "dusty",
+          "score_5": null,
+          "comment": "Heavy dust."
+        },
+        {
+          "shelves": "9-15",
+          "condition": "clean",
+          "score_5": null,
+          "comment": "Described as freezers in notes, clean."
+        },
+        {
+          "shelves": "16-17",
+          "condition": "dusty",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "18-19",
+          "condition": "clean",
+          "score_5": null,
+          "comment": "Fridges, good condition."
+        },
+        {
+          "shelves": "20-21",
+          "condition": "dusty",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "22-23",
+          "condition": "clean",
+          "score_5": null,
+          "comment": "Fridges, good condition."
+        },
+        {
+          "shelves": "24",
+          "condition": "dusty",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "25-26",
+          "condition": "minor_dust",
+          "score_5": null,
+          "comment": "Improved since Visit 1, still needs attention."
+        },
+        {
+          "shelves": "27-28",
+          "condition": "clean",
+          "score_5": null,
+          "comment": "Fridges, good condition."
+        },
+        {
+          "shelves": "29-30",
+          "condition": "minor_dust",
+          "score_5": null,
+          "comment": "Improved since Visit 1, still needs attention."
+        },
+        {
+          "shelves": "31-32",
+          "condition": "clean",
+          "score_5": null,
+          "comment": "Fridges, good condition."
+        },
+        {
+          "shelves": "33-35",
+          "condition": "mould",
+          "score_5": null,
+          "comment": "Mould, recurring from Visit 1."
+        },
+        {
+          "shelves": "36",
+          "condition": "dusty",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "37",
+          "condition": "mould",
+          "score_5": null,
+          "comment": "Mould, recurring from Visit 1."
+        },
+        {
+          "shelves": "38-40",
+          "condition": "dusty",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "41",
+          "condition": "clean",
+          "score_5": null,
+          "comment": "Fridge, good condition."
+        },
+        {
+          "shelves": "42",
+          "condition": "dusty",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "43-44",
+          "condition": "minor_dust",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "45",
+          "condition": "mould",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "46",
+          "condition": "minor_dust",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "47",
+          "condition": "mould",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "48",
+          "condition": "minor_dust",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "49",
+          "condition": "mould",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "50",
+          "condition": "minor_dust",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "51-52",
+          "condition": "dusty",
+          "score_5": null,
+          "comment": "Dry goods, need a thorough clean."
+        },
+        {
+          "shelves": "53-54",
+          "condition": "dusty",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "55",
+          "condition": "clean",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "57",
+          "condition": "clean",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "58-61",
+          "condition": "dusty",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "62-63",
+          "condition": "clean",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "64",
+          "condition": "mould",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "65-67",
+          "condition": "clean",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "68",
+          "condition": "mould",
+          "score_5": null,
+          "comment": ""
+        },
+        {
+          "shelves": "69-70",
+          "condition": "clean",
+          "score_5": null,
+          "comment": ""
+        }
+      ],
+      "staff_feedback": [
+        {
+          "staff_role": "picker",
+          "returning": true,
+          "tenure_note": "Same picker as Visit 1",
+          "points": "Sanitary products issue resolved. AC leak and floor repairs remain main concerns; maintenance visits are not effective.",
+          "topics": [
+            "sanitary_products",
+            "ac_leak",
+            "floor"
+          ]
+        },
+        {
+          "staff_role": "shift_lead",
+          "returning": false,
+          "tenure_note": "",
+          "points": "Same AC and floor concerns. Manager and shift lead remind riders about helmets, riders do not follow.",
+          "topics": [
+            "ac_leak",
+            "floor",
+            "helmets"
+          ]
+        },
+        {
+          "staff_role": "picker",
+          "returning": false,
+          "tenure_note": "About 1 month",
+          "points": "Positive about colleagues, environment and scheduling. No concerns yet.",
+          "topics": [
+            "colleagues_positive"
+          ]
+        },
+        {
+          "staff_role": "rider",
+          "returning": false,
+          "tenure_note": "Recently joined",
+          "points": "Received no onboarding information about helmets or uniform.",
+          "topics": [
+            "onboarding",
+            "helmets"
+          ]
+        }
+      ],
+      "notes": "Shelf 56 not recorded this visit."
+    },
+    {
+      "visit_key": "D3",
+      "hub": "Darmstadt",
+      "visit_number": 3,
+      "visit_date": "2026-10-15",
+      "date_is_placeholder": false,
+      "label": "Visit 3",
+      "manager_present": true,
+      "overall_impression": "Hub functioning and team engaged, manager present. Hole in the floor and mould in fridges need immediate action. Mould on 33-35, 37, 45, 47, 49 now seen on three visits.",
+      "shelf_checks": [
+        {
+          "shelves": "1-8",
+          "condition": "dusty",
+          "score_5": 3.0,
+          "comment": "Cleaning necessary. It has Dust on several shelves"
+        },
+        {
+          "shelves": "9",
+          "condition": "minor_dust",
+          "score_5": 3.0,
+          "comment": "Decent"
+        },
+        {
+          "shelves": "10-13",
+          "condition": "mould",
+          "score_5": 2.5,
+          "comment": "It is a fridge and there is mould still present."
+        },
+        {
+          "shelves": "14-15",
+          "condition": "minor_dust",
+          "score_5": 3.5,
+          "comment": "Decent"
+        },
+        {
+          "shelves": "16-17",
+          "condition": "dusty",
+          "score_5": 3.0,
+          "comment": "Cleaning necessary."
+        },
+        {
+          "shelves": "18",
+          "condition": "clean",
+          "score_5": 4.0,
+          "comment": "Fridge Section is good"
+        },
+        {
+          "shelves": "19",
+          "condition": "dusty",
+          "score_5": 3.0,
+          "comment": "Cleaning necessary."
+        },
+        {
+          "shelves": "20",
+          "condition": "clean",
+          "score_5": null,
+          "comment": "Good"
+        },
+        {
+          "shelves": "21",
+          "condition": "dusty",
+          "score_5": 3.0,
+          "comment": "Cleaning necessary."
+        },
+        {
+          "shelves": "22-23",
+          "condition": "clean",
+          "score_5": 4.0,
+          "comment": "Fridge Section is good"
+        },
+        {
+          "shelves": "24-26",
+          "condition": "dusty",
+          "score_5": 3.0,
+          "comment": "Cleaning necessary."
+        },
+        {
+          "shelves": "27-28",
+          "condition": "minor_dust",
+          "score_5": 3.5,
+          "comment": "Fridge. Minor cleaning is necessary at the bottom most shelf."
+        },
+        {
+          "shelves": "29-30",
+          "condition": "dusty",
+          "score_5": 3.0,
+          "comment": "Cleaning necessary."
+        },
+        {
+          "shelves": "31-32",
+          "condition": "minor_dust",
+          "score_5": 3.5,
+          "comment": "Fridge. Minor cleaning is necessary at the bottom most shelf."
+        },
+        {
+          "shelves": "33-35",
+          "condition": "mould",
+          "score_5": 2.0,
+          "comment": "Fridge. Mould is still Present and needs cleaning."
+        },
+        {
+          "shelves": "36",
+          "condition": "dusty",
+          "score_5": 3.0,
+          "comment": "Cleaning Necessary"
+        },
+        {
+          "shelves": "37",
+          "condition": "mould",
+          "score_5": 2.0,
+          "comment": "Fridge. Mould is still Present and needs cleaning."
+        },
+        {
+          "shelves": "38-40",
+          "condition": "dusty",
+          "score_5": 3.0,
+          "comment": "Cleaning Necessary"
+        },
+        {
+          "shelves": "41",
+          "condition": "mould",
+          "score_5": 2.5,
+          "comment": "Fridge. Mould is still Present and needs cleaning."
+        },
+        {
+          "shelves": "42-44",
+          "condition": "dusty",
+          "score_5": 3.0,
+          "comment": "Cleaning Necessary"
+        },
+        {
+          "shelves": "45",
+          "condition": "mould",
+          "score_5": 2.0,
+          "comment": "Fridge. Mould is still Present and needs cleaning."
+        },
+        {
+          "shelves": "46",
+          "condition": "dusty",
+          "score_5": 3.0,
+          "comment": "Cleaning Necessary"
+        },
+        {
+          "shelves": "47",
+          "condition": "mould",
+          "score_5": 2.0,
+          "comment": "Fridge. Mould is still Present and needs cleaning."
+        },
+        {
+          "shelves": "48",
+          "condition": "dusty",
+          "score_5": 3.0,
+          "comment": "Cleaning Necessary"
+        },
+        {
+          "shelves": "49",
+          "condition": "mould",
+          "score_5": 2.0,
+          "comment": "Fridge. Mould is still Present and needs cleaning."
+        },
+        {
+          "shelves": "50",
+          "condition": "dusty",
+          "score_5": 3.0,
+          "comment": "Cleaning Necessary"
+        },
+        {
+          "shelves": "51-54",
+          "condition": "dusty",
+          "score_5": 2.5,
+          "comment": "Cleaning Necessary"
+        },
+        {
+          "shelves": "55",
+          "condition": "clean",
+          "score_5": 4.0,
+          "comment": "Fridge. No Moulds. Good"
+        },
+        {
+          "shelves": "56",
+          "condition": "dusty",
+          "score_5": 3.0,
+          "comment": "Cleaning Necessary"
+        },
+        {
+          "shelves": "57",
+          "condition": "clean",
+          "score_5": 4.0,
+          "comment": "Fridge. No Moulds. Good"
+        },
+        {
+          "shelves": "58-60",
+          "condition": "dusty",
+          "score_5": 3.0,
+          "comment": "Cleaning Necessary"
+        },
+        {
+          "shelves": "61",
+          "condition": "clean",
+          "score_5": 4.0,
+          "comment": "Good"
+        },
+        {
+          "shelves": "62-63",
+          "condition": "minor_dust",
+          "score_5": 3.5,
+          "comment": "Minor Cleaning is necessary"
+        },
+        {
+          "shelves": "64",
+          "condition": "clean",
+          "score_5": 4.0,
+          "comment": "Fridge is good"
+        },
+        {
+          "shelves": "65",
+          "condition": "minor_dust",
+          "score_5": 3.5,
+          "comment": "Minor Cleaning is necessary"
+        },
+        {
+          "shelves": "66",
+          "condition": "clean",
+          "score_5": 4.0,
+          "comment": "Fridge is good"
+        },
+        {
+          "shelves": "67",
+          "condition": "minor_dust",
+          "score_5": 3.5,
+          "comment": "Minor Cleaning is necessary"
+        },
+        {
+          "shelves": "68",
+          "condition": "clean",
+          "score_5": 4.0,
+          "comment": "Fridge is good"
+        },
+        {
+          "shelves": "69",
+          "condition": "minor_dust",
+          "score_5": 3.5,
+          "comment": "Minor Cleaning is necessary"
+        },
+        {
+          "shelves": "70",
+          "condition": "clean",
+          "score_5": 4.0,
+          "comment": "Fridge is good"
+        }
+      ],
+      "staff_feedback": [
+        {
+          "staff_role": "picker",
+          "returning": false,
+          "tenure_note": "",
+          "points": "Positive about environment and manager. Mould in fridges keeps coming back. Fridge 13 right door handle about 70% broken, slows picking.",
+          "topics": [
+            "colleagues_positive",
+            "fridge_mould",
+            "fridge_13_handle"
+          ]
+        },
+        {
+          "staff_role": "picker",
+          "returning": false,
+          "tenure_note": "",
+          "points": "Same mould and fridge 13 concerns. Water filter still not working. Big hole in the floor makes roller racks with heavy stock (drinks) lose balance during inbound.",
+          "topics": [
+            "colleagues_positive",
+            "fridge_mould",
+            "fridge_13_handle",
+            "water_filter",
+            "floor"
+          ]
+        }
+      ],
+      "notes": "Riders not interviewed: taking them offline would have hurt operations. Manager confirms riders still ignore helmet instructions. Score_5 values converted from the Excel sheet (60% = 3/5)."
+    },
+    {
+      "visit_key": "M1",
+      "hub": "Mainz",
+      "visit_number": 1,
+      "visit_date": "2026-09-04",
+      "date_is_placeholder": true,
+      "label": "Trial shift",
+      "manager_present": null,
+      "overall_impression": "Strong fundamentals: excellent back stock room and battery compartment, very good team culture. Riders room disorganised and needs immediate attention.",
+      "shelf_checks": [
+        {
+          "shelves": "1-17",
+          "condition": "minor_dust",
+          "score_5": null,
+          "comment": "Good, minor cleaning needed."
+        },
+        {
+          "shelves": "18-51",
+          "condition": "clean",
+          "score_5": null,
+          "comment": "Very clean."
+        },
+        {
+          "shelves": "52-70",
+          "condition": "minor_dust",
+          "score_5": null,
+          "comment": "Good, minor cleaning needed."
+        }
+      ],
+      "staff_feedback": [
+        {
+          "staff_role": "picker",
+          "returning": false,
+          "tenure_note": "4 ops associates, combined",
+          "points": "All happy with colleagues and flexibility, comfortable approaching shift lead and manager. Want a dedicated employee fridge and a clean space to eat. Carrying heavy stock up from the basement is tiring.",
+          "topics": [
+            "colleagues_positive",
+            "employee_fridge",
+            "break_room",
+            "heavy_stock_basement"
+          ]
+        },
+        {
+          "staff_role": "rider",
+          "returning": false,
+          "tenure_note": "3 riders, combined",
+          "points": "All positive about team. Shelves 1-3 hard to reach, rack numbers hard to see, table blocks the bike room, app routes via staircases.",
+          "topics": [
+            "colleagues_positive",
+            "shelf_access",
+            "rack_numbering",
+            "bike_room",
+            "routing"
+          ]
+        }
+      ],
+      "notes": "Feedback was recorded per group, not per person. Split into individual rows if you want exact counts (7 people spoken to)."
+    },
+    {
+      "visit_key": "M2",
+      "hub": "Mainz",
+      "visit_number": 2,
+      "visit_date": "2026-09-11",
+      "date_is_placeholder": true,
+      "label": "Visit 2",
+      "manager_present": null,
+      "overall_impression": "Noticeably improved since the first visit; feedback was acted on (employee fridge, coffee machine, helmet spot, bottle space).",
+      "shelf_checks": [
+        {
+          "shelves": "1-57",
+          "condition": "clean",
+          "score_5": 5,
+          "comment": "10/10."
+        },
+        {
+          "shelves": "58",
+          "condition": "minor_dust",
+          "score_5": null,
+          "comment": "Small bit of cleaning."
+        },
+        {
+          "shelves": "59",
+          "condition": "clean",
+          "score_5": 5,
+          "comment": ""
+        },
+        {
+          "shelves": "60",
+          "condition": "minor_dust",
+          "score_5": null,
+          "comment": "Small bit of cleaning."
+        },
+        {
+          "shelves": "61-70",
+          "condition": "clean",
+          "score_5": 5,
+          "comment": ""
+        }
+      ],
+      "staff_feedback": [
+        {
+          "staff_role": "picker",
+          "returning": false,
+          "tenure_note": "Ops associate",
+          "points": "Happy with scheduling and colleagues. Pay could be better. Yoghurt, meat and milk sometimes not inbounded on time. Wants an extra person during REWE deliveries, restocking at night, and the third picker starting an hour before the previous one leaves.",
+          "topics": [
+            "pay",
+            "inbound_food_safety",
+            "staffing",
+            "restocking_timing"
+          ]
+        },
+        {
+          "staff_role": "rider",
+          "returning": false,
+          "tenure_note": "",
+          "points": "Facilities issues fixed within about 10 days. Bike problems too frequent, stats pressure, rain pants poor quality, wants better gloves and winter pants.",
+          "topics": [
+            "bike_maintenance",
+            "stats_pressure",
+            "rider_clothing"
+          ]
+        },
+        {
+          "staff_role": "rider",
+          "returning": false,
+          "tenure_note": "",
+          "points": "Same bike, stats and clothing points. Some riders leave tissues around and do not maintain helmets. Had to put back other riders' bikes after 7pm.",
+          "topics": [
+            "bike_maintenance",
+            "stats_pressure",
+            "rider_clothing",
+            "riders_room_cleanliness",
+            "bike_return"
+          ]
+        }
+      ],
+      "notes": "Visit order and date are placeholders: check whether this came before or after 25 Sep. Suggestion from riders: a forum to share delivery tips."
+    },
+    {
+      "visit_key": "M3",
+      "hub": "Mainz",
+      "visit_number": 3,
+      "visit_date": "2026-09-25",
+      "date_is_placeholder": false,
+      "label": "Visit 3",
+      "manager_present": null,
+      "overall_impression": "Very good condition, strong team relations, freezers excellent with no mould. Riders room better but still needs work; bike room door stopper needed.",
+      "shelf_checks": [
+        {
+          "shelves": "1-2",
+          "condition": "clean",
+          "score_5": 4.5,
+          "comment": ""
+        },
+        {
+          "shelves": "3-5",
+          "condition": "minor_dust",
+          "score_5": 4.5,
+          "comment": "Minor cleaning needed."
+        },
+        {
+          "shelves": "6-51",
+          "condition": "clean",
+          "score_5": 4.5,
+          "comment": ""
+        },
+        {
+          "shelves": "52-62",
+          "condition": "minor_dust",
+          "score_5": 4,
+          "comment": ""
+        },
+        {
+          "shelves": "63-70",
+          "condition": "clean",
+          "score_5": 4.5,
+          "comment": ""
+        }
+      ],
+      "staff_feedback": [
+        {
+          "staff_role": "picker",
+          "returning": false,
+          "tenure_note": "",
+          "points": "Happy with colleagues. Not happy with pay. Restocking at shift start forces back-and-forth during picking and hurts stats; wants restocking at end of day.",
+          "topics": [
+            "colleagues_positive",
+            "pay",
+            "restocking_timing"
+          ]
+        },
+        {
+          "staff_role": "picker",
+          "returning": false,
+          "tenure_note": "",
+          "points": "Very happy with colleagues; scheduling issues solved weekly. 12 h contract too low. Suggests wet wipes in toilets and food for staff during shifts.",
+          "topics": [
+            "colleagues_positive",
+            "contract_hours",
+            "welfare_suggestions"
+          ]
+        },
+        {
+          "staff_role": "rider",
+          "returning": false,
+          "tenure_note": "",
+          "points": "Helmets shared without protection, suggests disposable head covers. Equipment takes too long to arrive. Order stack could be better organised. Bike problems frequent. Routing poor. Bike room door stopper missing.",
+          "topics": [
+            "helmets",
+            "equipment_provision",
+            "order_stack",
+            "bike_maintenance",
+            "routing",
+            "door_stopper"
+          ]
+        },
+        {
+          "staff_role": "rider",
+          "returning": false,
+          "tenure_note": "",
+          "points": "Happy with colleagues and scheduling. Same door stopper issue. Personal belongings not safe in riders room. Water filter quality poor. App customer location sometimes wrong, has to check Google Maps.",
+          "topics": [
+            "door_stopper",
+            "belongings_security",
+            "water_filter",
+            "routing"
+          ]
+        }
+      ],
+      "notes": ""
+    },
+    {
+      "visit_key": "M4",
+      "hub": "Mainz",
+      "visit_number": 4,
+      "visit_date": "2026-10-07",
+      "date_is_placeholder": false,
+      "label": "Visit 4",
+      "manager_present": null,
+      "overall_impression": "Riders room better, freezer section excellent (5/5), back stock room 4.5/5. Coffee area needs cleaning, dust on upper racks of shelves 1-8.",
+      "shelf_checks": [
+        {
+          "shelves": "1-8",
+          "condition": "dusty",
+          "score_5": 3,
+          "comment": "Dust on the shelves, mostly on the higher racks."
+        },
+        {
+          "shelves": "9-19",
+          "condition": "minor_dust",
+          "score_5": 3.75,
+          "comment": "Fridges, good. Needed a little cleaning; manager informed."
+        },
+        {
+          "shelves": "20-29",
+          "condition": "minor_dust",
+          "score_5": 4.25,
+          "comment": "Very good."
+        },
+        {
+          "shelves": "30-32",
+          "condition": "clean",
+          "score_5": 4.5,
+          "comment": "Fridge."
+        },
+        {
+          "shelves": "33-39",
+          "condition": "minor_dust",
+          "score_5": 4.25,
+          "comment": "Very good."
+        },
+        {
+          "shelves": "40-45",
+          "condition": "minor_dust",
+          "score_5": 4,
+          "comment": "Fridge, good."
+        },
+        {
+          "shelves": "46-47",
+          "condition": "minor_dust",
+          "score_5": 4.25,
+          "comment": "Very good."
+        },
+        {
+          "shelves": "48-51",
+          "condition": "minor_dust",
+          "score_5": 4,
+          "comment": "Good."
+        },
+        {
+          "shelves": "52",
+          "condition": "clean",
+          "score_5": 4.5,
+          "comment": ""
+        },
+        {
+          "shelves": "53",
+          "condition": "minor_dust",
+          "score_5": 4,
+          "comment": "Fridge."
+        },
+        {
+          "shelves": "54",
+          "condition": "clean",
+          "score_5": 4.5,
+          "comment": ""
+        },
+        {
+          "shelves": "55",
+          "condition": "mould",
+          "score_5": 4,
+          "comment": "Fridge. Small mould."
+        },
+        {
+          "shelves": "56",
+          "condition": "clean",
+          "score_5": 4.5,
+          "comment": ""
+        },
+        {
+          "shelves": "57",
+          "condition": "minor_dust",
+          "score_5": 4,
+          "comment": "Fridge."
+        },
+        {
+          "shelves": "58",
+          "condition": "clean",
+          "score_5": 4.5,
+          "comment": ""
+        },
+        {
+          "shelves": "59",
+          "condition": "minor_dust",
+          "score_5": 4,
+          "comment": "Fridge."
+        },
+        {
+          "shelves": "60",
+          "condition": "clean",
+          "score_5": 4.5,
+          "comment": ""
+        },
+        {
+          "shelves": "61-62",
+          "condition": "minor_dust",
+          "score_5": 4,
+          "comment": "Fridge."
+        },
+        {
+          "shelves": "63-64",
+          "condition": "clean",
+          "score_5": 5,
+          "comment": "Very good."
+        },
+        {
+          "shelves": "65",
+          "condition": "minor_dust",
+          "score_5": 4,
+          "comment": "Good."
+        },
+        {
+          "shelves": "66",
+          "condition": "clean",
+          "score_5": 5,
+          "comment": "Very good."
+        },
+        {
+          "shelves": "67-70",
+          "condition": "minor_dust",
+          "score_5": 4,
+          "comment": "Good."
+        }
+      ],
+      "staff_feedback": [
+        {
+          "staff_role": "rider",
+          "returning": true,
+          "tenure_note": "Same rider as earlier visit",
+          "points": "Same feedback as before. Riders wear helmets but hygiene is the concern; asks for disposable head covers.",
+          "topics": [
+            "helmets"
+          ]
+        },
+        {
+          "staff_role": "rider",
+          "returning": true,
+          "tenure_note": "Same rider as earlier visit",
+          "points": "Same feedback as before, including helmet hygiene.",
+          "topics": [
+            "helmets"
+          ]
+        }
+      ],
+      "notes": "Scores from handwritten notes. Shelf 52-60 was 4.5/5 except the fridges in that range at 4/5."
+    }
+  ],
+  "issues": [
+    {
+      "issue_key": "D-mould",
+      "hub": "Darmstadt",
+      "category": "shelf_hygiene",
+      "severity": "immediate",
+      "title": "Mould in fridges",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "D1",
+          "state": "new",
+          "note": "Fridges 33, 35, 37, 45."
+        },
+        {
+          "visit_key": "D2",
+          "state": "still_open",
+          "note": "Now 33-35, 37, 45, 47, 49, 64, 68."
+        },
+        {
+          "visit_key": "D3",
+          "state": "still_open",
+          "note": "Now 10-13, 33-35, 37, 41, 45, 47, 49. 64 and 68 clean."
+        }
+      ]
+    },
+    {
+      "issue_key": "D-fridge-doors",
+      "hub": "Darmstadt",
+      "category": "fridge_freezer_equipment",
+      "severity": "medium",
+      "title": "Fridge doors hard to open (14, 15, 28, 64 left, 68 right, 70 left)",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "D1",
+          "state": "new",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "issue_key": "D-fridge13-handle",
+      "hub": "Darmstadt",
+      "category": "fridge_freezer_equipment",
+      "severity": "high",
+      "title": "Fridge 13 right door handle about 70% broken",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "D3",
+          "state": "new",
+          "note": "Raised by both pickers; slows picking."
+        }
+      ]
+    },
+    {
+      "issue_key": "D-floor-hole",
+      "hub": "Darmstadt",
+      "category": "floor",
+      "severity": "immediate",
+      "title": "Hole in floor destabilises roller racks during inbound",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "D3",
+          "state": "new",
+          "note": "Raised independently by two pickers. May relate to the floor repairs mentioned in Visit 2."
+        }
+      ]
+    },
+    {
+      "issue_key": "D-floor-repairs",
+      "hub": "Darmstadt",
+      "category": "floor",
+      "severity": "medium",
+      "title": "Floor repairs not effective",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "D2",
+          "state": "new",
+          "note": "Visit 2 report called this recurring from Visit 1, but the Visit 1 report does not mention it. Check."
+        }
+      ]
+    },
+    {
+      "issue_key": "D-ac-leak",
+      "hub": "Darmstadt",
+      "category": "ac_leaks",
+      "severity": "high",
+      "title": "AC water leakage (entrance and behind fridges 12/13)",
+      "exclude_from_outputs": true,
+      "updates": [
+        {
+          "visit_key": "D2",
+          "state": "new",
+          "note": "Standing water, no wet floor sign. Report said also present in Visit 1."
+        },
+        {
+          "visit_key": "D3",
+          "state": "resolved",
+          "note": "Confirmed resolved when filling the Airtable form."
+        }
+      ]
+    },
+    {
+      "issue_key": "D-water-filter",
+      "hub": "Darmstadt",
+      "category": "water_filter",
+      "severity": "medium",
+      "title": "Water filter not working",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "D1",
+          "state": "new",
+          "note": "Not plugged in, not used."
+        },
+        {
+          "visit_key": "D2",
+          "state": "still_open",
+          "note": ""
+        },
+        {
+          "visit_key": "D3",
+          "state": "still_open",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "issue_key": "D-sanitary",
+      "hub": "Darmstadt",
+      "category": "staff_welfare",
+      "severity": "high",
+      "title": "Sanitary products missing in women's washroom",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "D1",
+          "state": "new",
+          "note": "Raised by both pickers."
+        },
+        {
+          "visit_key": "D2",
+          "state": "resolved",
+          "note": "Picker confirmed it is fixed."
+        }
+      ]
+    },
+    {
+      "issue_key": "D-toilet-smell",
+      "hub": "Darmstadt",
+      "category": "staff_welfare",
+      "severity": "medium",
+      "title": "Toilet smell reaches kitchen and break room",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "D1",
+          "state": "new",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "issue_key": "D-employee-fridge",
+      "hub": "Darmstadt",
+      "category": "staff_welfare",
+      "severity": "low",
+      "title": "No dedicated employee fridge",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "D1",
+          "state": "new",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "issue_key": "D-rack8",
+      "hub": "Darmstadt",
+      "category": "other",
+      "severity": "low",
+      "title": "Pickup rack 8 number sticker missing",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "D1",
+          "state": "new",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "issue_key": "D-bikes-sun",
+      "hub": "Darmstadt",
+      "category": "bike_room",
+      "severity": "low",
+      "title": "Bikes parked in direct sunlight during opening hours",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "D1",
+          "state": "new",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "issue_key": "D-shelf-dust",
+      "hub": "Darmstadt",
+      "category": "shelf_hygiene",
+      "severity": "medium",
+      "title": "Dust on ambient shelves",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "D2",
+          "state": "new",
+          "note": "Heavy on 1-8."
+        },
+        {
+          "visit_key": "D3",
+          "state": "still_open",
+          "note": "Widespread across ambient shelves."
+        }
+      ]
+    },
+    {
+      "issue_key": "D-bike-room",
+      "hub": "Darmstadt",
+      "category": "bike_room",
+      "severity": "medium",
+      "title": "Bike room dirty and smells",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "D2",
+          "state": "new",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "issue_key": "D-batteries",
+      "hub": "Darmstadt",
+      "category": "batteries_chargers",
+      "severity": "high",
+      "title": "Shortage of charged batteries and chargers at peak",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "D2",
+          "state": "new",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "issue_key": "D-helmets",
+      "hub": "Darmstadt",
+      "category": "rider_safety_gear",
+      "severity": "high",
+      "title": "Riders not wearing helmets despite reminders",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "D2",
+          "state": "new",
+          "note": ""
+        },
+        {
+          "visit_key": "D3",
+          "state": "still_open",
+          "note": "Manager still reminding, riders not complying."
+        }
+      ]
+    },
+    {
+      "issue_key": "D-onboarding",
+      "hub": "Darmstadt",
+      "category": "process",
+      "severity": "medium",
+      "title": "Rider onboarding misses helmet and uniform rules",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "D2",
+          "state": "new",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "issue_key": "M-riders-room",
+      "hub": "Mainz",
+      "category": "riders_room",
+      "severity": "high",
+      "title": "Riders room disorganised and untidy",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "M1",
+          "state": "new",
+          "note": "Equipment dumped, rack unused, broken hanging stand, full bin."
+        },
+        {
+          "visit_key": "M2",
+          "state": "improved",
+          "note": "Helmets have a spot, bottle space added."
+        },
+        {
+          "visit_key": "M3",
+          "state": "improved",
+          "note": "Equipment categorised; food plate left for days."
+        },
+        {
+          "visit_key": "M4",
+          "state": "improved",
+          "note": "Riders room is better."
+        }
+      ]
+    },
+    {
+      "issue_key": "M-shelf-access",
+      "hub": "Mainz",
+      "category": "other",
+      "severity": "high",
+      "title": "Pickup shelves 1-3 hard for riders to reach",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "M1",
+          "state": "new",
+          "note": "All 3 riders raised it."
+        }
+      ]
+    },
+    {
+      "issue_key": "M-rack-numbers",
+      "hub": "Mainz",
+      "category": "other",
+      "severity": "low",
+      "title": "No clear numbering on rider side of pickup rack",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "M1",
+          "state": "new",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "issue_key": "M-bike-room-table",
+      "hub": "Mainz",
+      "category": "bike_room",
+      "severity": "medium",
+      "title": "Table blocks bikes in bike room",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "M1",
+          "state": "new",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "issue_key": "M-coffee",
+      "hub": "Mainz",
+      "category": "staff_welfare",
+      "severity": "medium",
+      "title": "Coffee area: cleaning supplies mixed with food, needs cleaning",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "M1",
+          "state": "new",
+          "note": ""
+        },
+        {
+          "visit_key": "M2",
+          "state": "improved",
+          "note": "Separated and organised, still needs a wipe down."
+        },
+        {
+          "visit_key": "M4",
+          "state": "still_open",
+          "note": "Clean the coffee area."
+        }
+      ]
+    },
+    {
+      "issue_key": "M-bottles",
+      "hub": "Mainz",
+      "category": "staff_welfare",
+      "severity": "low",
+      "title": "No space for staff water bottles",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "M1",
+          "state": "new",
+          "note": ""
+        },
+        {
+          "visit_key": "M2",
+          "state": "resolved",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "issue_key": "M-employee-fridge",
+      "hub": "Mainz",
+      "category": "staff_welfare",
+      "severity": "low",
+      "title": "No dedicated employee fridge",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "M1",
+          "state": "new",
+          "note": ""
+        },
+        {
+          "visit_key": "M2",
+          "state": "resolved",
+          "note": "Fridge and coffee machine provided."
+        }
+      ]
+    },
+    {
+      "issue_key": "M-basement-equipment",
+      "hub": "Mainz",
+      "category": "riders_room",
+      "severity": "medium",
+      "title": "Rider equipment in basement not sorted; assortment racks underused",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "M2",
+          "state": "new",
+          "note": "Report says this was also flagged in visit 1."
+        },
+        {
+          "visit_key": "M4",
+          "state": "still_open",
+          "note": "Mostly clothes: winter and summer jackets, rain pants."
+        }
+      ]
+    },
+    {
+      "issue_key": "M-routing",
+      "hub": "Mainz",
+      "category": "app_routing",
+      "severity": "medium",
+      "title": "App routing and customer location errors",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "M1",
+          "state": "new",
+          "note": "Routes via staircases."
+        },
+        {
+          "visit_key": "M3",
+          "state": "still_open",
+          "note": "Customer location sometimes wrong; riders check Google Maps."
+        }
+      ]
+    },
+    {
+      "issue_key": "M-helmet-hygiene",
+      "hub": "Mainz",
+      "category": "rider_safety_gear",
+      "severity": "medium",
+      "title": "Shared helmets not hygienic; disposable head covers requested",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "M2",
+          "state": "new",
+          "note": ""
+        },
+        {
+          "visit_key": "M3",
+          "state": "still_open",
+          "note": ""
+        },
+        {
+          "visit_key": "M4",
+          "state": "still_open",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "issue_key": "M-pfand-bin",
+      "hub": "Mainz",
+      "category": "riders_room",
+      "severity": "low",
+      "title": "No Pfand bin in riders room",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "M2",
+          "state": "new",
+          "note": ""
+        },
+        {
+          "visit_key": "M4",
+          "state": "still_open",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "issue_key": "M-bike-maintenance",
+      "hub": "Mainz",
+      "category": "bike_room",
+      "severity": "medium",
+      "title": "Bike problems too frequent; checks needed more often",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "M2",
+          "state": "new",
+          "note": ""
+        },
+        {
+          "visit_key": "M3",
+          "state": "still_open",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "issue_key": "M-rider-clothing",
+      "hub": "Mainz",
+      "category": "rider_safety_gear",
+      "severity": "medium",
+      "title": "Poor rain pants; better gloves and winter pants needed",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "M2",
+          "state": "new",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "issue_key": "M-inbound-food",
+      "hub": "Mainz",
+      "category": "process",
+      "severity": "high",
+      "title": "Yoghurt, meat and milk sometimes not inbounded on time",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "M2",
+          "state": "new",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "issue_key": "M-restocking",
+      "hub": "Mainz",
+      "category": "process",
+      "severity": "medium",
+      "title": "Restocking timing disrupts picking",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "M2",
+          "state": "new",
+          "note": ""
+        },
+        {
+          "visit_key": "M3",
+          "state": "still_open",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "issue_key": "M-door-stopper",
+      "hub": "Mainz",
+      "category": "bike_room",
+      "severity": "high",
+      "title": "Bike room door has no stopper; damages bike side bags",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "M3",
+          "state": "new",
+          "note": "Raised by both riders."
+        }
+      ]
+    },
+    {
+      "issue_key": "M-belongings",
+      "hub": "Mainz",
+      "category": "riders_room",
+      "severity": "medium",
+      "title": "Personal belongings not secure in riders room",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "M3",
+          "state": "new",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "issue_key": "M-equipment-wait",
+      "hub": "Mainz",
+      "category": "process",
+      "severity": "medium",
+      "title": "Long wait for new or replacement rider equipment",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "M3",
+          "state": "new",
+          "note": ""
+        }
+      ]
+    },
+    {
+      "issue_key": "M-shelf-dust",
+      "hub": "Mainz",
+      "category": "shelf_hygiene",
+      "severity": "low",
+      "title": "Dust on upper racks of shelves 1-8; fridges need light cleaning",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "M4",
+          "state": "new",
+          "note": "Manager informed about fridges."
+        }
+      ]
+    },
+    {
+      "issue_key": "M-mould-55",
+      "hub": "Mainz",
+      "category": "shelf_hygiene",
+      "severity": "medium",
+      "title": "Small mould in fridge 55",
+      "exclude_from_outputs": false,
+      "updates": [
+        {
+          "visit_key": "M4",
+          "state": "new",
+          "note": ""
+        }
+      ]
+    }
+  ]
+}

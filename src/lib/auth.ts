@@ -1,9 +1,10 @@
 import "server-only";
 import { cache } from "react";
 import { redirect } from "next/navigation";
+import type { Enums } from "@/lib/database.types";
 import { createClient } from "@/lib/supabase/server";
 
-export type Role = "inspector" | "viewer" | "admin";
+export type Role = Enums<"user_role">;
 
 export type CurrentUser = {
   id: string;
@@ -36,6 +37,6 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser> => {
     id: claims.sub,
     email: typeof claims.email === "string" ? claims.email : null,
     fullName: profile?.full_name ?? null,
-    role: (profile?.role as Role | undefined) ?? null,
+    role: profile?.role ?? null,
   };
 });

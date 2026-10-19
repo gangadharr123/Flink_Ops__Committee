@@ -29,3 +29,23 @@ Next.js + Supabase, hosted on Netlify. See `CLAUDE.md` for the full brief.
    ```
 
 New users start as `viewer`. Admins change roles in the `profiles` table.
+
+## Roles
+
+| | read everything | write visits, shelf checks, issues, updates, feedback, photos | edit hubs, shelves, profiles |
+|---|---|---|---|
+| viewer | yes | no | no |
+| inspector | yes | yes | no |
+| admin | yes | yes | yes |
+
+Enforced by row-level security in `supabase/migrations/20261019200100_rls_policies.sql`.
+
+## Tests and types
+
+- `npm test` runs all migrations in an in-memory Postgres (PGlite) and checks the security rules.
+- `npm run db:types` regenerates `src/lib/database.types.ts` from the migrations. Run it after adding a migration.
+
+## Seed data
+
+- `supabase/seed/shelves.csv` is loaded into the database by the `seed_hubs_shelves` migration.
+- `supabase/seed/past_visits.json` holds past visits for a later import step.
