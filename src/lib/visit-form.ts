@@ -58,17 +58,31 @@ export type StaffValue = {
   topics: string[];
 };
 
+// This visit's update on an issue that was already open. null = not updated.
+export type IssueUpdateChoice = "still_open" | "improved" | "resolved";
+export type IssueUpdateValue = { state: IssueUpdateChoice | null; note: string };
+
 export type VisitFormValues = {
   manager_present: ManagerPresent;
   overall_impression: string;
   notes: string;
   shelves: Record<string, ShelfValue>;
   staff: StaffValue[];
+  // keyed by issueKey(issue id)
+  issues: Record<string, IssueUpdateValue>;
 };
 
 export function shelfKey(number: number) {
   return `n${number}`;
 }
+
+// Form key for an issue: a prefix keeps React Hook Form from treating a
+// uuid that starts with digits as an array index.
+export function issueFormKey(issueId: string) {
+  return `i_${issueId}`;
+}
+
+export const EMPTY_ISSUE_UPDATE: IssueUpdateValue = { state: null, note: "" };
 
 export const EMPTY_SHELF: ShelfValue = { condition: null, score: "", comment: "" };
 
@@ -156,6 +170,8 @@ export type VisitPatch = {
     topics: string[];
   }[];
   staffDeletes: string[];
+  issueUpserts: { issue_id: string; state: IssueUpdateChoice; note: string | null }[];
+  issueDeletes: string[];
 };
 
 export function isPatchEmpty(patch: VisitPatch) {
@@ -164,7 +180,9 @@ export function isPatchEmpty(patch: VisitPatch) {
     patch.shelfUpserts.length === 0 &&
     patch.shelfDeletes.length === 0 &&
     patch.staffUpserts.length === 0 &&
-    patch.staffDeletes.length === 0
+    patch.staffDeletes.length === 0 &&
+    patch.issueUpserts.length === 0 &&
+    patch.issueDeletes.length === 0
   );
 }
 
@@ -176,7 +194,8 @@ const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
 //   patch:   what to send
 //   next:    what "saved" becomes once the patch succeeds
 //   skipped: entries not sent because they are incomplete (bad score,
-//            staff card without a role); they stay "unsaved"
+//            staff card without a role, issue note without a state);
+//            they stay "unsaved"
 export function buildPatch(
   saved: VisitFormValues,
   current: VisitFormValues,
@@ -187,6 +206,8 @@ export function buildPatch(
     shelfDeletes: [],
     staffUpserts: [],
     staffDeletes: [],
+    issueUpserts: [],
+    issueDeletes: [],
   };
   const next: VisitFormValues = structuredClone(current);
   let skipped = 0;
@@ -252,6 +273,31 @@ export function buildPatch(
   }
   for (const card of saved.staff) {
     if (!currentIds.has(card.id)) patch.staffDeletes.push(card.id);
+  }
+
+  // Updates on open issues
+  const issueKeys = new Set([...Object.keys(saved.issues), ...Object.keys(current.issues)]);
+  for (const key of issueKeys) {
+    const before = saved.issues[key] ?? EMPTY_ISSUE_UPDATE;
+    const after = current.issues[key] ?? EMPTY_ISSUE_UPDATE;
+    if (same(before, after)) continue;
+    const issueId = key.replace(/^i_/, "");
+
+    if (after.state === null) {
+      if (after.note.trim() !== "") {
+        // A note needs a state; keep it unsaved until one is picked.
+        skipped++;
+        next.issues[key] = before;
+      } else if (before.state !== null) {
+        patch.issueDeletes.push(issueId);
+      }
+      continue;
+    }
+    patch.issueUpserts.push({
+      issue_id: issueId,
+      state: after.state,
+      note: nullIfEmpty(after.note),
+    });
   }
 
   return { patch, next, skipped };

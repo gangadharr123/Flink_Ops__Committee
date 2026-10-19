@@ -18,11 +18,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
   isShelfChanged,
+  issueFormKey,
   shelfKey,
   type ManagerPresent,
   type VisitFormValues,
 } from "@/lib/visit-form";
-import type { EditorShelf } from "@/lib/visits";
+import type { EditorIssue, EditorShelf } from "@/lib/visits";
 import { ChoiceChips } from "./choice-chips";
 import { clearBackup } from "./use-autosave";
 
@@ -36,17 +37,21 @@ const MANAGER_OPTIONS: { value: ManagerPresent; label: string }[] = [
 // and deleting the draft. Submitting is in the bottom bar.
 export function StepSummary({
   shelves,
+  openIssues,
+  newIssueCount,
   visitId,
   readOnly,
   canDelete,
 }: {
   shelves: EditorShelf[];
+  openIssues: EditorIssue[];
+  newIssueCount: number;
   visitId: string;
   readOnly: boolean;
   canDelete: boolean;
 }) {
   const { control, register } = useFormContext<VisitFormValues>();
-  const counts = useVisitCounts(shelves);
+  const counts = useVisitCounts(shelves, openIssues);
 
   return (
     <section className="flex flex-col gap-6">
@@ -90,10 +95,15 @@ export function StepSummary({
         />
       </div>
 
-      <dl className="grid grid-cols-2 gap-3 rounded-xl border p-4 text-sm sm:grid-cols-4">
+      <dl className="grid grid-cols-2 gap-3 rounded-xl border p-4 text-sm sm:grid-cols-3">
         <Stat label="Shelves checked" value={`${counts.checked} / ${shelves.length}`} />
         <Stat label="Mould" value={counts.mould} alert={counts.mould > 0} />
         <Stat label="Changed" value={counts.changed} />
+        <Stat
+          label="Open issues updated"
+          value={`${openIssues.length - counts.issuesNotUpdated} / ${openIssues.length}`}
+        />
+        <Stat label="New issues" value={newIssueCount} />
         <Stat label="Staff spoken to" value={counts.staff} />
       </dl>
 
@@ -122,10 +132,11 @@ function Stat({
 }
 
 // Live counts used by the summary and the submit dialog.
-export function useVisitCounts(shelves: EditorShelf[]) {
+export function useVisitCounts(shelves: EditorShelf[], openIssues: EditorIssue[]) {
   const { control } = useFormContext<VisitFormValues>();
   const values = useWatch({ control, name: "shelves" });
   const staff = useWatch({ control, name: "staff" });
+  const issues = useWatch({ control, name: "issues" });
 
   let checked = 0;
   let mould = 0;
@@ -144,6 +155,7 @@ export function useVisitCounts(shelves: EditorShelf[]) {
     changed,
     staff: staff.length,
     staffWithoutRole: staff.filter((s) => s.staff_role === null).length,
+    issuesNotUpdated: openIssues.filter((i) => !issues[issueFormKey(i.id)]?.state).length,
   };
 }
 

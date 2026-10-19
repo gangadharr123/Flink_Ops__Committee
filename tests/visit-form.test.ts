@@ -74,6 +74,7 @@ describe("buildPatch", () => {
     notes: "",
     shelves: { n1: { condition: "dusty", score: "3", comment: "" } },
     staff: [],
+    issues: {},
   };
   const ids = { n1: "shelf-1", n2: "shelf-2" };
 
@@ -127,5 +128,24 @@ describe("buildPatch", () => {
 
     const removed = buildPatch(added.next, base, ids);
     expect(removed.patch.staffDeletes).toEqual(["card-1"]);
+  });
+
+  it("upserts issue updates, deletes cleared ones, holds a note without a state", async () => {
+    const key = "i_issue-1";
+    const set = buildPatch(
+      base,
+      { ...base, issues: { [key]: { state: "improved", note: " better " } } },
+      ids,
+    );
+    expect(set.patch.issueUpserts).toEqual([
+      { issue_id: "issue-1", state: "improved", note: "better" },
+    ]);
+
+    const cleared = buildPatch(set.next, { ...base, issues: { [key]: { state: null, note: "" } } }, ids);
+    expect(cleared.patch.issueDeletes).toEqual(["issue-1"]);
+
+    const noteOnly = buildPatch(base, { ...base, issues: { [key]: { state: null, note: "hm" } } }, ids);
+    expect(noteOnly.patch.issueUpserts).toEqual([]);
+    expect(noteOnly.skipped).toBe(1);
   });
 });

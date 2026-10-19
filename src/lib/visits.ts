@@ -2,9 +2,20 @@ import "server-only";
 import type { Enums } from "@/lib/database.types";
 import { createClient } from "@/lib/supabase/server";
 import {
+  RECURRING_MIN_VISITS,
+  SEVERITY_RANK,
+  visitsSeen,
+  type IssueCategory,
+  type IssueUpdateState,
+  type Severity,
+} from "@/lib/issues";
+import {
+  EMPTY_ISSUE_UPDATE,
   EMPTY_SHELF,
+  issueFormKey,
   shelfKey,
   type Condition,
+  type IssueUpdateChoice,
   type VisitFormValues,
   type Zone,
 } from "@/lib/visit-form";
@@ -71,7 +82,7 @@ export async function getVisitForEditor(visitId: string) {
   if (error) throw error;
   if (!visit) return null;
 
-  const [shelves, checks, previousChecks, staff, topics] = await Promise.all([
+  const [shelves, checks, previousChecks, staff, topics, issues] = await Promise.all([
     supabase
       .from("shelves")
       .select("id, number, zone, zone_confidence")
@@ -93,10 +104,74 @@ export async function getVisitForEditor(visitId: string) {
       .eq("visit_id", visit.id)
       .order("created_at"),
     supabase.from("staff_topics").select("topic"),
+    supabase
+      .from("issues")
+      .select(
+        `id, issue_key, title, category, severity, status, description,
+         exclude_from_outputs, first_seen_visit_id,
+         first_seen:visits!issues_first_seen_visit_id_fkey (status),
+         updates:issue_updates (visit_id, state, note,
+           visit:visits (label, visit_date))`,
+      )
+      .eq("hub_id", visit.hub_id),
   ]);
-  for (const result of [shelves, checks, previousChecks, staff, topics]) {
+  for (const result of [shelves, checks, previousChecks, staff, topics, issues]) {
     if (result.error) throw result.error;
   }
+
+  // Issues for the Issues step.
+  // "Open": already open before this visit, not from some other draft
+  // (test visits), plus anything this visit already updated.
+  // A submitted visit only shows what it actually updated.
+  const isDraft = visit.status === "draft";
+  const openIssues: EditorIssue[] = [];
+  const newIssues: NewIssue[] = [];
+  for (const issue of issues.data ?? []) {
+    const updates = issue.updates ?? [];
+    const own = updates.find((u) => u.visit_id === visit.id);
+    const seen = visitsSeen(updates);
+    const base = {
+      id: issue.id,
+      key: issue.issue_key,
+      title: issue.title,
+      category: issue.category,
+      severity: issue.severity,
+      description: issue.description,
+      excluded: issue.exclude_from_outputs,
+      visitsSeen: seen,
+      isRecurring: seen >= RECURRING_MIN_VISITS,
+    };
+
+    if (issue.first_seen_visit_id === visit.id) {
+      newIssues.push({ ...base, photos: [] });
+      continue;
+    }
+    const fromOtherDraft = issue.first_seen?.status === "draft";
+    const listed = own
+      ? own.state !== "new"
+      : isDraft && issue.status === "open" && !fromOtherDraft;
+    if (!listed) continue;
+
+    const last = updates
+      .filter((u) => u.visit_id !== visit.id && u.visit)
+      .sort((a, b) => b.visit!.visit_date.localeCompare(a.visit!.visit_date))[0];
+    openIssues.push({
+      ...base,
+      last: last
+        ? {
+            label: last.visit!.label,
+            date: last.visit!.visit_date,
+            state: last.state,
+            note: last.note,
+          }
+        : null,
+      own: own && own.state !== "new" ? { state: own.state, note: own.note ?? "" } : null,
+    });
+  }
+  openIssues.sort(
+    (a, b) =>
+      SEVERITY_RANK[a.severity] - SEVERITY_RANK[b.severity] || a.title.localeCompare(b.title),
+  );
 
   const checkByShelf = new Map((checks.data ?? []).map((c) => [c.shelf_id, c]));
   const prevByShelf = new Map((previousChecks.data ?? []).map((c) => [c.shelf_id, c]));
@@ -142,6 +217,14 @@ export async function getVisitForEditor(visitId: string) {
       points: f.points ?? "",
       topics: f.topics,
     })),
+    issues: Object.fromEntries(
+      openIssues.map((i) => [
+        issueFormKey(i.id),
+        i.own
+          ? { state: i.own.state as IssueUpdateChoice, note: i.own.note }
+          : { ...EMPTY_ISSUE_UPDATE },
+      ]),
+    ),
   };
 
   return {
@@ -156,6 +239,8 @@ export async function getVisitForEditor(visitId: string) {
     },
     shelves: editorShelves,
     values,
+    openIssues,
+    newIssues: await withPhotos(supabase, visit.id, newIssues),
     topicSuggestions: (topics.data ?? [])
       .map((t) => t.topic)
       .filter((t): t is string => t !== null),
@@ -163,3 +248,70 @@ export async function getVisitForEditor(visitId: string) {
 }
 
 export type VisitEditorData = NonNullable<Awaited<ReturnType<typeof getVisitForEditor>>>;
+
+type IssueBase = {
+  id: string;
+  key: string;
+  title: string;
+  category: IssueCategory;
+  severity: Severity;
+  description: string | null;
+  excluded: boolean;
+  visitsSeen: number;
+  isRecurring: boolean;
+};
+
+// An issue that was open before this visit.
+export type EditorIssue = IssueBase & {
+  last: { label: string | null; date: string; state: IssueUpdateState; note: string | null } | null;
+  own: { state: IssueUpdateState; note: string } | null;
+};
+
+export type IssuePhoto = { id: string; url: string | null; caption: string | null };
+
+// An issue first seen on this visit.
+export type NewIssue = IssueBase & { photos: IssuePhoto[] };
+
+// Photos are in a private bucket, so the browser gets short-lived signed
+// links (valid 1 hour) instead of public URLs.
+export async function signPhotoUrls(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  paths: string[],
+) {
+  if (paths.length === 0) return new Map<string, string>();
+  const { data, error } = await supabase.storage
+    .from("visit-photos")
+    .createSignedUrls(paths, 60 * 60);
+  if (error) throw error;
+  return new Map(
+    data.flatMap((d) => (d.path && d.signedUrl ? [[d.path, d.signedUrl] as const] : [])),
+  );
+}
+
+async function withPhotos(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  visitId: string,
+  issues: NewIssue[],
+): Promise<NewIssue[]> {
+  if (issues.length === 0) return issues;
+  const { data, error } = await supabase
+    .from("photos")
+    .select("id, issue_id, storage_path, caption")
+    .eq("visit_id", visitId)
+    .in(
+      "issue_id",
+      issues.map((i) => i.id),
+    )
+    .order("created_at");
+  if (error) throw error;
+  const urls = await signPhotoUrls(
+    supabase,
+    data.map((p) => p.storage_path),
+  );
+  return issues.map((issue) => ({
+    ...issue,
+    photos: data
+      .filter((p) => p.issue_id === issue.id)
+      .map((p) => ({ id: p.id, url: urls.get(p.storage_path) ?? null, caption: p.caption })),
+  }));
+}

@@ -51,6 +51,8 @@ export function VisitEditor({
   );
   const [restored, setRestored] = useState(false);
   const [submitOpen, setSubmitOpen] = useState(false);
+  // New issues are saved straight away (not autosaved), so they live here.
+  const [newIssues, setNewIssues] = useState(data.newIssues);
   const [leaving, startLeaving] = useTransition();
 
   // Changes that never reached the server (e.g. signal dropped) are kept on
@@ -59,7 +61,12 @@ export function VisitEditor({
     if (readOnly) return;
     const backup = readBackup(visit.id);
     if (backup && JSON.stringify(backup) !== JSON.stringify(data.values)) {
-      form.reset(backup);
+      // Older backups may lack newer parts of the form (e.g. issues).
+      form.reset({
+        ...data.values,
+        ...backup,
+        issues: { ...data.values.issues, ...backup.issues },
+      });
       // eslint-disable-next-line react-hooks/set-state-in-effect -- one-off notice after reading localStorage, which only exists in the browser
       setRestored(true);
     }
@@ -131,13 +138,24 @@ export function VisitEditor({
         )}
 
         {step === "shelves" && <StepShelves shelves={data.shelves} readOnly={readOnly} />}
-        {step === "issues" && <StepIssues />}
+        {step === "issues" && (
+          <StepIssues
+            visitId={visit.id}
+            hubName={visit.hubName}
+            openIssues={data.openIssues}
+            newIssues={newIssues}
+            onNewIssuesChange={setNewIssues}
+            readOnly={readOnly}
+          />
+        )}
         {step === "staff" && (
           <StepStaff suggestions={data.topicSuggestions} readOnly={readOnly} />
         )}
         {step === "summary" && (
           <StepSummary
             shelves={data.shelves}
+            openIssues={data.openIssues}
+            newIssueCount={newIssues.length}
             visitId={visit.id}
             readOnly={readOnly}
             canDelete={canEdit && visit.status === "draft"}
@@ -158,6 +176,7 @@ export function VisitEditor({
         open={submitOpen}
         onOpenChange={setSubmitOpen}
         shelves={data.shelves}
+        openIssues={data.openIssues}
         label={visit.label}
         onConfirm={submit}
       />

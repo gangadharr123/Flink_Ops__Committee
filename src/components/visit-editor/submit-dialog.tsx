@@ -11,7 +11,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import type { EditorShelf } from "@/lib/visits";
+import type { EditorIssue, EditorShelf } from "@/lib/visits";
 import { useVisitCounts } from "./step-summary";
 
 // Confirms submitting. Warns about unchecked shelves but still allows it.
@@ -19,16 +19,18 @@ export function SubmitDialog({
   open,
   onOpenChange,
   shelves,
+  openIssues,
   label,
   onConfirm,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   shelves: EditorShelf[];
+  openIssues: EditorIssue[];
   label: string;
   onConfirm: () => Promise<string | null>;
 }) {
-  const counts = useVisitCounts(shelves);
+  const counts = useVisitCounts(shelves, openIssues);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -50,11 +52,16 @@ export function SubmitDialog({
             After submitting, this visit is read-only.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        {(counts.unchecked > 0 || counts.staffWithoutRole > 0) && (
+        {(counts.unchecked > 0 || counts.staffWithoutRole > 0 || counts.issuesNotUpdated > 0) && (
           <ul className="list-disc rounded-lg bg-amber-500/10 py-2 pr-3 pl-7 text-sm text-amber-800 dark:text-amber-300">
             {counts.unchecked > 0 && (
               <li>
                 {counts.unchecked} of {shelves.length} shelves are not checked.
+              </li>
+            )}
+            {counts.issuesNotUpdated > 0 && (
+              <li>
+                {counts.issuesNotUpdated} open issue(s) not updated.
               </li>
             )}
             {counts.staffWithoutRole > 0 && (

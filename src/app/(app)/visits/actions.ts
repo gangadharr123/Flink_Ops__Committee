@@ -83,6 +83,17 @@ const patchSchema = z.object({
     )
     .max(100),
   staffDeletes: z.array(z.uuid()).max(100),
+  issueUpserts: z
+    .array(
+      z.object({
+        issue_id: z.uuid(),
+        // "new" is only set by create_issue()
+        state: z.enum(["still_open", "improved", "resolved"]),
+        note: z.string().max(2000).nullable(),
+      }),
+    )
+    .max(300),
+  issueDeletes: z.array(z.uuid()).max(300),
 });
 
 const NOT_EDITABLE = "This visit can't be edited (submitted, deleted, or your role).";
@@ -144,7 +155,96 @@ export async function saveVisit(
     if (error) return fail("staff delete", error.message);
   }
 
+  if (patch.issueUpserts.length > 0) {
+    const { error } = await supabase.from("issue_updates").upsert(
+      patch.issueUpserts.map((u) => ({ ...u, visit_id: visitId })),
+      { onConflict: "issue_id,visit_id" },
+    );
+    if (error) return fail("issue update upsert", error.message);
+  }
+
+  if (patch.issueDeletes.length > 0) {
+    const { error } = await supabase
+      .from("issue_updates")
+      .delete()
+      .eq("visit_id", visitId)
+      .neq("state", "new")
+      .in("issue_id", patch.issueDeletes);
+    if (error) return fail("issue update delete", error.message);
+  }
+
   return {};
+}
+
+const newIssueSchema = z.object({
+  category: z.enum(Constants.public.Enums.issue_category, "Pick a category"),
+  title: z.string().trim().min(3, "Title is too short").max(200),
+  severity: z.enum(Constants.public.Enums.issue_severity, "Pick a severity"),
+  description: z.string().trim().max(5000),
+});
+
+export type CreatedIssue = { id: string; key: string };
+
+// Creates an issue first seen on this visit (with its "new" update).
+export async function createIssue(
+  visitId: string,
+  input: z.input<typeof newIssueSchema>,
+): Promise<ActionState & { issue?: CreatedIssue }> {
+  const parsed = newIssueSchema.safeParse(input);
+  if (!parsed.success) return { error: parsed.error.issues[0].message };
+
+  const supabase = await createClient();
+  const { data: id, error } = await supabase.rpc("create_issue", {
+    p_visit_id: visitId,
+    p_category: parsed.data.category,
+    p_title: parsed.data.title,
+    p_severity: parsed.data.severity,
+    p_description: parsed.data.description,
+  });
+  if (error) {
+    console.error("create_issue failed:", error.message);
+    return { error: error.code === "42501" ? NOT_EDITABLE : "Could not add the issue. Try again." };
+  }
+
+  const { data: issue } = await supabase
+    .from("issues")
+    .select("issue_key")
+    .eq("id", id)
+    .single();
+  return { issue: { id, key: issue?.issue_key ?? "" } };
+}
+
+// Deletes an issue added on this (draft) visit, with its photo files.
+export async function deleteIssue(visitId: string, issueId: string): Promise<ActionState> {
+  const supabase = await createClient();
+  const { data: photos } = await supabase
+    .from("photos")
+    .select("storage_path")
+    .eq("visit_id", visitId)
+    .eq("issue_id", issueId);
+
+  const { data, error } = await supabase
+    .from("issues")
+    .delete()
+    .eq("id", issueId)
+    .eq("first_seen_visit_id", visitId)
+    .select("id");
+  if (error) return fail("issue delete", error.message);
+  if (data.length === 0) return { error: NOT_EDITABLE };
+
+  await removeFiles(supabase, (photos ?? []).map((p) => p.storage_path));
+  return {};
+}
+
+// Storage files aren't deleted with their database rows, so remove them.
+// Failure only leaves an orphan file, so it is logged, not shown.
+async function removeFiles(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  paths: string[],
+) {
+  if (paths.length === 0) return;
+  const { error } = await supabase.storage.from("visit-photos").remove(paths);
+  if (error) console.error("photo file delete failed:", error.message);
 }
 
 export async function submitVisit(visitId: string): Promise<ActionState> {
@@ -162,6 +262,20 @@ export async function submitVisit(visitId: string): Promise<ActionState> {
 
 export async function deleteVisit(visitId: string): Promise<ActionState> {
   const supabase = await createClient();
+  const { data: visit } = await supabase
+    .from("visits")
+    .select("status")
+    .eq("id", visitId)
+    .maybeSingle();
+  if (visit?.status !== "draft") return { error: "Only draft visits can be deleted." };
+
+  // Remove photo files first: storage only allows it while the draft exists.
+  const { data: photos } = await supabase
+    .from("photos")
+    .select("storage_path")
+    .eq("visit_id", visitId);
+  await removeFiles(supabase, (photos ?? []).map((p) => p.storage_path));
+
   const { data, error } = await supabase
     .from("visits")
     .delete()
