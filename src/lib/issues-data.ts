@@ -2,6 +2,7 @@ import "server-only";
 import { SEVERITY_RANK, type IssueCategory, type Severity } from "@/lib/issues";
 import { createClient } from "@/lib/supabase/server";
 import type { Database, Enums } from "@/lib/database.types";
+import { signPhotoUrls, type IssuePhoto } from "@/lib/visits";
 
 // Read helpers for the Issues pages. Call inside <Suspense>.
 
@@ -70,6 +71,81 @@ export async function listIssues(filters: IssueFilters): Promise<IssueListItem[]
         SEVERITY_RANK[a.severity] - SEVERITY_RANK[b.severity] ||
         (b.lastSeen ?? "").localeCompare(a.lastSeen ?? ""),
     );
+}
+
+export type TimelineEntry = {
+  visitId: string;
+  visitLabel: string;
+  visitDate: string;
+  visitStatus: Enums<"visit_status">;
+  state: Enums<"issue_update_state">;
+  note: string | null;
+  photos: IssuePhoto[];
+};
+
+// One issue with its numbers and a timeline: one entry per visit, oldest first.
+export async function getIssueDetail(issueId: string) {
+  const supabase = await createClient();
+  const { data: issue, error } = await supabase
+    .from("issues")
+    .select(
+      `id, issue_key, title, category, severity, status, description,
+       exclude_from_outputs, hub:hubs (name),
+       updates:issue_updates (visit_id, state, note,
+         visit:visits (label, visit_number, visit_date, status))`,
+    )
+    .eq("id", issueId)
+    .maybeSingle();
+  if (error) throw error;
+  if (!issue) return null;
+
+  const [stats, photos] = await Promise.all([
+    getStats([issue.id]),
+    supabase
+      .from("photos")
+      .select("id, visit_id, storage_path, caption")
+      .eq("issue_id", issue.id)
+      .order("created_at"),
+  ]);
+  if (photos.error) throw photos.error;
+  const urls = await signPhotoUrls(
+    supabase,
+    photos.data.map((p) => p.storage_path),
+  );
+
+  const timeline: TimelineEntry[] = issue.updates
+    .filter((u) => u.visit)
+    .map((u) => ({
+      visitId: u.visit_id,
+      visitLabel: u.visit!.label ?? `Visit ${u.visit!.visit_number}`,
+      visitDate: u.visit!.visit_date,
+      visitStatus: u.visit!.status,
+      state: u.state,
+      note: u.note,
+      photos: photos.data
+        .filter((p) => p.visit_id === u.visit_id)
+        .map((p) => ({ id: p.id, url: urls.get(p.storage_path) ?? null, caption: p.caption })),
+    }))
+    .sort((a, b) => a.visitDate.localeCompare(b.visitDate));
+
+  const s = stats.get(issue.id);
+  return {
+    id: issue.id,
+    key: issue.issue_key,
+    title: issue.title,
+    category: issue.category,
+    severity: issue.severity,
+    status: issue.status,
+    description: issue.description,
+    excluded: issue.exclude_from_outputs,
+    hubName: issue.hub.name,
+    visitsSeen: s?.visits_seen ?? 0,
+    isRecurring: s?.is_recurring ?? false,
+    daysOpen: s?.days_open ?? null,
+    firstSeen: s?.first_seen_date ?? null,
+    resolvedDate: s?.resolved_date ?? null,
+    timeline,
+  };
 }
 
 type IssueStats = Database["public"]["Views"]["issue_stats"]["Row"];
