@@ -4,11 +4,12 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
 import Link from "next/link";
-import { ClipboardCopy, FileDown, X } from "lucide-react";
+import { ClipboardCopy, CloudOff, FileDown, X } from "lucide-react";
 import { submitVisit } from "@/app/(app)/visits/actions";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { formatDate } from "@/lib/format";
+import { useOnline } from "@/lib/use-online";
 import { cn } from "@/lib/utils";
 import { shelfKey, STEPS, type VisitFormValues, type VisitStep } from "@/lib/visit-form";
 import type { VisitEditorData } from "@/lib/visits";
@@ -53,6 +54,7 @@ export function VisitEditor({
     readOnly ? "shelves" : visit.currentStep,
   );
   const [restored, setRestored] = useState(false);
+  const online = useOnline();
   const [submitOpen, setSubmitOpen] = useState(false);
   // New issues are saved straight away (not autosaved), so they live here.
   const [newIssues, setNewIssues] = useState(data.newIssues);
@@ -145,6 +147,16 @@ export function VisitEditor({
 
         <StepProgress current={step} onSelect={goTo} />
 
+        {!online && !readOnly && (
+          <p
+            role="status"
+            className="flex items-start gap-2 rounded-lg border border-amber-500/50 bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-200"
+          >
+            <CloudOff className="mt-0.5 size-4 shrink-0" />
+            You&apos;re offline. Changes are kept on this phone and sync when you&apos;re back
+            online. Adding issues or photos, submitting and deleting need a connection.
+          </p>
+        )}
         {restored && (
           <p className="rounded-lg bg-muted p-3 text-sm" role="status">
             Restored changes from this device that were not saved yet.

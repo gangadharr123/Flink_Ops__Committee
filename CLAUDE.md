@@ -55,6 +55,7 @@ An issue lives across visits; each visit adds an issue_update (new / still open 
 - Airtable answers: src/lib/airtable/answers.ts (pure), page /visits/[id]/airtable, edits in airtable_answers table
 - Dashboard: src/lib/dashboard/aggregate.ts (pure), charts in src/components/dashboard/charts.tsx (colours: --viz-* in globals.css)
 - Deploy: netlify.toml, README "Deploy to Netlify"; .github/workflows/supabase-keepalive.yml pings Supabase every 3 days
+- PWA: src/app/manifest.ts, public/sw.js (bump VERSION when changing it), icons via `npm run icons`; offline edits = autosave "local" status
 - Done: Next.js 16 skeleton, magic-link login (invite-only), profiles migration with RLS, app shell (sidebar / bottom nav); core tables, RLS, hubs + shelves seed, generated types, RLS tests; visit flow (list, new visit, 4-step editor with autosave, shelves, staff feedback, summary, submit, delete draft)
 - Visit editor: src/components/visit-editor/, pure logic in src/lib/visit-form.ts, saves via src/app/(app)/visits/actions.ts
 - Note: Next.js 16 uses src/proxy.ts (not middleware.ts) and Cache Components: session reads must sit inside <Suspense>

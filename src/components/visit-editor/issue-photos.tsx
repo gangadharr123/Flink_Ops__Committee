@@ -5,6 +5,7 @@ import { addIssuePhoto, deletePhoto } from "@/app/(app)/visits/actions";
 import { PhotoPicker } from "@/components/photos/photo-picker";
 import { PhotoThumbs, type Thumb } from "@/components/photos/photo-thumbs";
 import { removeUploadedPhoto, uploadVisitPhoto } from "@/lib/upload-photo";
+import { useOnline } from "@/lib/use-online";
 
 // Photos of one issue taken on this visit: thumbnails, plus add / delete
 // while the visit is a draft. Saved immediately (not autosaved).
@@ -22,6 +23,7 @@ export function IssuePhotos({
   readOnly: boolean;
 }) {
   const [photos, setPhotos] = useState(initial);
+  const online = useOnline();
   const [error, setError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
@@ -53,7 +55,13 @@ export function IssuePhotos({
     <div className="flex flex-col gap-2">
       <PhotoThumbs photos={photos} alt={alt} onDelete={readOnly ? undefined : remove} />
       {!readOnly && (
-        <PhotoPicker onPicked={add} label={photos.length ? "Add another photo" : "Add photo"} />
+        <PhotoPicker
+          onPicked={add}
+          disabled={!online}
+          label={
+            !online ? "Photos need a connection" : photos.length ? "Add another photo" : "Add photo"
+          }
+        />
       )}
       {error && (
         <p className="text-sm text-destructive" role="alert">

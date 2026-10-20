@@ -1,14 +1,24 @@
 "use client";
 
-import { AlertCircle, Check, ChevronLeft, ChevronRight, Loader2, Save } from "lucide-react";
+import {
+  AlertCircle,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  CloudOff,
+  Loader2,
+  Save,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useOnline } from "@/lib/use-online";
 import { cn } from "@/lib/utils";
 import type { SaveStatus } from "./use-autosave";
 
 const STATUS_TEXT: Record<SaveStatus, string> = {
-  saved: "Saved",
+  saved: "Synced",
   unsaved: "Save",
-  saving: "Saving...",
+  saving: "Syncing...",
+  local: "Saved on this phone",
   error: "Not saved",
   incomplete: "Check fields",
 };
@@ -30,6 +40,7 @@ export function ActionBar({
   onNext?: () => void;
   onSubmit?: () => void;
 }) {
+  const online = useOnline();
   return (
     <div className="fixed inset-x-0 bottom-0 z-20 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:left-60">
       {status === "error" && error && (
@@ -54,15 +65,17 @@ export function ActionBar({
             onClick={onSave}
             aria-live="polite"
             className={cn(
-              "flex h-12 items-center justify-center gap-1.5 justify-self-center rounded-lg px-3 text-sm",
+              "flex h-12 items-center justify-center gap-1.5 justify-self-center rounded-lg px-2 text-center text-sm leading-tight",
               status === "saved" && "text-muted-foreground",
               status === "unsaved" && "font-medium",
+              status === "local" && "font-medium text-amber-700 dark:text-amber-400",
               (status === "error" || status === "incomplete") && "font-medium text-destructive",
             )}
           >
             {status === "saved" && <Check className="size-4" />}
             {status === "unsaved" && <Save className="size-4" />}
             {status === "saving" && <Loader2 className="size-4 animate-spin" />}
+            {status === "local" && <CloudOff className="size-4" />}
             {(status === "error" || status === "incomplete") && <AlertCircle className="size-4" />}
             {STATUS_TEXT[status]}
           </button>
@@ -71,7 +84,13 @@ export function ActionBar({
         )}
 
         {onSubmit ? (
-          <Button type="button" onClick={onSubmit} className="h-12 justify-self-end px-5 text-base">
+          <Button
+            type="button"
+            onClick={onSubmit}
+            disabled={!online}
+            title={online ? undefined : "Needs a connection"}
+            className="h-12 justify-self-end px-5 text-base"
+          >
             Submit
           </Button>
         ) : (

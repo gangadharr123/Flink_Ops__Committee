@@ -11,10 +11,11 @@ import {
 } from "@/lib/visit-form";
 
 export type SaveStatus =
-  | "saved" // everything is on the server
+  | "saved" // everything is on the server ("Synced")
   | "unsaved" // changes waiting for the next save
   | "saving"
-  | "error" // last save failed, retrying
+  | "local" // offline: changes are kept on this phone, sync when back online
+  | "error" // the server refused the save, retrying
   | "incomplete"; // something can't be saved yet (bad score, card without role)
 
 const SAVE_DELAY_MS = 2000;
@@ -56,7 +57,8 @@ function writeBackup(visitId: string, values: VisitFormValues) {
 
 // The saving logic, kept outside React so it is easy to follow:
 // changes -> wait 2 s -> send only what changed -> on failure retry in 5 s.
-// Only one save runs at a time.
+// Offline: changes stay in localStorage ("local") and are sent as soon as
+// the browser reports it is back online. Only one save runs at a time.
 class Autosaver {
   status: SaveStatus = "saved";
   lastError: string | null = null;
@@ -82,8 +84,24 @@ class Autosaver {
 
   changed(values: VisitFormValues) {
     writeBackup(this.visitId, values);
+    if (!navigator.onLine) {
+      // No point trying: wait for the "online" event.
+      clearTimeout(this.timer);
+      this.setStatus("local");
+      return;
+    }
     if (this.status !== "saving") this.setStatus("unsaved");
     this.schedule(SAVE_DELAY_MS);
+  }
+
+  // Browser events from the hook below.
+  wentOffline() {
+    clearTimeout(this.timer);
+    if (this.status !== "saved") this.setStatus("local");
+  }
+
+  backOnline() {
+    void this.saveNow();
   }
 
   private schedule(delay: number) {
@@ -117,12 +135,21 @@ class Autosaver {
       return true;
     }
 
+    if (!navigator.onLine) {
+      this.setStatus("local");
+      return false;
+    }
+
     this.setStatus("saving");
     let error: string | null;
     try {
       error = (await saveVisit(this.visitId, patch)).error ?? null;
     } catch {
-      error = "No connection. Will retry.";
+      // The request didn't get through (e.g. Wi-Fi with no internet). The
+      // changes are already in localStorage, so this is "saved locally".
+      this.setStatus("local");
+      this.schedule(RETRY_DELAY_MS);
+      return false;
     }
     if (error) {
       this.setStatus("error", error);
@@ -198,13 +225,24 @@ export function useAutosave({
     const onBeforeUnload = (event: BeforeUnloadEvent) => {
       if (saver.status !== "saved") event.preventDefault();
     };
+    // Airplane mode on/off: switch to "saved on this phone", and sync the
+    // moment the connection is back.
+    const onOffline = () => saver.wentOffline();
+    const onOnline = () => saver.backOnline();
     document.addEventListener("visibilitychange", onHide);
     window.addEventListener("beforeunload", onBeforeUnload);
+    window.addEventListener("offline", onOffline);
+    window.addEventListener("online", onOnline);
+
+    // Opened while offline, or with changes restored from this phone.
+    if (!navigator.onLine) saver.wentOffline();
 
     return () => {
       unsubscribe();
       document.removeEventListener("visibilitychange", onHide);
       window.removeEventListener("beforeunload", onBeforeUnload);
+      window.removeEventListener("offline", onOffline);
+      window.removeEventListener("online", onOnline);
       saver.dispose();
     };
   }, [enabled, form, saver]);

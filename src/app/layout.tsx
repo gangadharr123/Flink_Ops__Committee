@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { RegisterServiceWorker } from "@/components/pwa/register-sw";
 import "./globals.css";
 
 // globals.css reads --font-sans for Tailwind's font-sans class.
@@ -16,6 +17,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: { default: "HubCheck", template: "%s | HubCheck" },
   description: "Flink Ops Committee hub visits",
+  // iPhone home screen icon and full-screen mode (iOS ignores parts of the manifest).
+  icons: { apple: "/icons/apple-touch-icon.png" },
+  appleWebApp: { capable: true, title: "HubCheck", statusBarStyle: "default" },
 };
 
 // viewportFit "cover" lets the bottom bar respect the iPhone home indicator.
@@ -23,6 +27,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -31,7 +36,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        {children}
+        <RegisterServiceWorker />
+      </body>
     </html>
   );
 }

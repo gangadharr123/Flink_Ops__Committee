@@ -8,8 +8,9 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Run on everything except static files and images.
+  // Run on everything except static files, images and the PWA files
+  // (service worker, manifest, icons), which must load without a login.
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|sw\\.js|manifest\\.webmanifest|icons/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };

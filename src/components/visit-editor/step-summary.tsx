@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useOnline } from "@/lib/use-online";
 import {
   isShelfChanged,
   issueFormKey,
@@ -172,6 +173,7 @@ export function useVisitCounts(shelves: EditorShelf[], openIssues: EditorIssue[]
 
 function DeleteDraft({ visitId }: { visitId: string }) {
   const [open, setOpen] = useState(false);
+  const online = useOnline();
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -190,6 +192,8 @@ function DeleteDraft({ visitId }: { visitId: string }) {
         type="button"
         variant="destructive"
         onClick={() => setOpen(true)}
+        disabled={!online}
+        title={online ? undefined : "Needs a connection"}
         className="h-12 self-start text-base"
       >
         <Trash2 /> Delete draft

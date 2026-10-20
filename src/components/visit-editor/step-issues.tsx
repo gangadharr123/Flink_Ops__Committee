@@ -8,6 +8,7 @@ import { ExcludedBadge, RecurringBadge, SeverityBadge } from "@/components/issue
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { formatDate } from "@/lib/format";
+import { useOnline } from "@/lib/use-online";
 import { CATEGORY_LABELS, UPDATE_STATES } from "@/lib/issues";
 import {
   issueFormKey,
@@ -54,6 +55,7 @@ export function StepIssues({
   const updates = useWatch({ control, name: "issues" });
   const updated = openIssues.filter((i) => updates[issueFormKey(i.id)]?.state).length;
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const online = useOnline();
 
   return (
     <section className="flex flex-col gap-6">
@@ -105,6 +107,8 @@ export function StepIssues({
             type="button"
             variant="outline"
             onClick={() => setDrawerOpen(true)}
+            disabled={!online}
+            title={online ? undefined : "Needs a connection"}
             className="h-12 text-base sm:self-start"
           >
             <Plus /> Add new issue
@@ -213,6 +217,7 @@ function NewIssueCard({
   onDeleted: () => void;
 }) {
   const [confirm, setConfirm] = useState(false);
+  const online = useOnline();
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -258,6 +263,7 @@ function NewIssueCard({
               type="button"
               variant="ghost"
               onClick={() => setConfirm(true)}
+              disabled={!online}
               className="h-10 text-muted-foreground"
             >
               <Trash2 /> Delete

@@ -95,6 +95,19 @@ Free Supabase projects pause after 7 days without activity. The GitHub Actions w
 GitHub turns off scheduled workflows in a **public** repository after 60 days with no commits.
 If you stop working on the code for two months, check the Actions tab and re-enable it.
 
+## Install on a phone and offline use
+
+- **Install**: open the live (https) site. Android Chrome: menu > Install app. iPhone Safari:
+  Share > Add to Home Screen. It opens on Visits, without the browser bar.
+- **Offline**: the service worker (`public/sw.js`, production only) caches the app files and keeps
+  a copy of Home, Visits and each visit you open. During a visit, edits made without a connection
+  are kept on the phone ("Saved on this phone") and sync when you're back ("Synced").
+  Adding issues or photos, submitting and deleting need a connection.
+- Service workers only run on https or localhost, so test offline on the Netlify site or with
+  `npm run build && npm start` on your laptop (Chrome DevTools > Network > Offline).
+- Signing out clears the pages kept on the device. Changing `public/sw.js`? Bump `VERSION` in it.
+- Icons: edit and run `npm run icons` (writes `public/icons/`).
+
 ## Roles
 
 | | read everything | write visits, shelf checks, issues, updates, feedback, photos | edit hubs, shelves, profiles |
