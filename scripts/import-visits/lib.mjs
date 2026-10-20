@@ -148,6 +148,21 @@ export function validate(json) {
     visits.push(visit);
   });
 
+  // Per hub, visit numbers must follow date order (1 is the earliest visit).
+  for (const hub of HUBS) {
+    const inHub = visits
+      .filter((v) => v.hub === hub && Number.isInteger(v.number) && isDate(v.date))
+      .sort((a, b) => a.number - b.number);
+    for (let i = 1; i < inHub.length; i++) {
+      if (inHub[i].date < inHub[i - 1].date) {
+        err(
+          `visits (${hub})`,
+          `visit_number order doesn't match date order: ${inHub[i - 1].key} is number ${inHub[i - 1].number} on ${inHub[i - 1].date}, but ${inHub[i].key} is number ${inHub[i].number} on ${inHub[i].date}`,
+        );
+      }
+    }
+  }
+
   const issues = [];
   const issueKeys = new Set();
   json.issues.forEach((issue, i) => {

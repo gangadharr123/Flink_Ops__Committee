@@ -57,6 +57,15 @@ describe("validate", () => {
     });
   });
 
+  it("requires visit numbers to follow date order per hub", () => {
+    const swapped = structuredClone(SEED);
+    // Mainz visit 2 dated after visit 3, without renumbering.
+    swapped.visits.find((v: { visit_key: string }) => v.visit_key === "M2").visit_date = "2026-10-01";
+    expect(validate(swapped).errors).toContain(
+      "visits (Mainz): visit_number order doesn't match date order: M2 is number 2 on 2026-10-01, but M3 is number 3 on 2026-09-25",
+    );
+  });
+
   it("lists every problem with its location", () => {
     const bad = {
       format_version: 1,
