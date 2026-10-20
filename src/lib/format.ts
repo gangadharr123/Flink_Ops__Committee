@@ -10,6 +10,16 @@ export function formatDate(isoDate: string) {
   });
 }
 
+// "2026-10-15" -> "15 October 2026" (used in reports).
+export function formatLongDate(isoDate: string) {
+  return new Date(`${isoDate}T00:00:00Z`).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
 // Today's date in Germany as "YYYY-MM-DD" (the server runs in UTC).
 export function todayInGermany() {
   return new Intl.DateTimeFormat("en-CA", {
