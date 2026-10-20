@@ -166,6 +166,7 @@ export async function getVisitForEditor(visitId: string) {
           }
         : null,
       own: own && own.state !== "new" ? { state: own.state, note: own.note ?? "" } : null,
+      photos: [],
     });
   }
   openIssues.sort(
@@ -239,7 +240,7 @@ export async function getVisitForEditor(visitId: string) {
     },
     shelves: editorShelves,
     values,
-    openIssues,
+    openIssues: await withPhotos(supabase, visit.id, openIssues),
     newIssues: await withPhotos(supabase, visit.id, newIssues),
     topicSuggestions: (topics.data ?? [])
       .map((t) => t.topic)
@@ -265,6 +266,8 @@ type IssueBase = {
 export type EditorIssue = IssueBase & {
   last: { label: string | null; date: string; state: IssueUpdateState; note: string | null } | null;
   own: { state: IssueUpdateState; note: string } | null;
+  // photos taken on this visit
+  photos: IssuePhoto[];
 };
 
 export type IssuePhoto = { id: string; url: string | null; caption: string | null };
@@ -288,11 +291,12 @@ export async function signPhotoUrls(
   );
 }
 
-async function withPhotos(
+// Adds this visit's photos (with signed links) to each issue.
+async function withPhotos<T extends { id: string; photos: IssuePhoto[] }>(
   supabase: Awaited<ReturnType<typeof createClient>>,
   visitId: string,
-  issues: NewIssue[],
-): Promise<NewIssue[]> {
+  issues: T[],
+): Promise<T[]> {
   if (issues.length === 0) return issues;
   const { data, error } = await supabase
     .from("photos")

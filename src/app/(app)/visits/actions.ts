@@ -185,7 +185,7 @@ const newIssueSchema = z.object({
   photoPath: z.string().optional(),
 });
 
-export type CreatedIssue = { id: string; key: string };
+export type CreatedIssue = { id: string; key: string; photoId?: string };
 
 // Creates an issue first seen on this visit (with its "new" update).
 export async function createIssue(
@@ -195,8 +195,7 @@ export async function createIssue(
   const parsed = newIssueSchema.safeParse(input);
   if (!parsed.success) return { error: parsed.error.issues[0].message };
   const { photoPath } = parsed.data;
-  const photoPattern = new RegExp(`^${visitId}/[0-9a-f-]{36}\\.jpg$`);
-  if (photoPath && !photoPattern.test(photoPath)) return { error: "Invalid photo." };
+  if (photoPath && !isVisitPhotoPath(visitId, photoPath)) return { error: "Invalid photo." };
 
   const supabase = await createClient();
   const { data: id, error } = await supabase.rpc("create_issue", {
@@ -219,15 +218,18 @@ export async function createIssue(
   const created = { id, key: issue?.issue_key ?? "" };
 
   if (photoPath) {
-    const { error: photoError } = await supabase
+    const { data: photo, error: photoError } = await supabase
       .from("photos")
-      .insert({ visit_id: visitId, issue_id: id, storage_path: photoPath });
+      .insert({ visit_id: visitId, issue_id: id, storage_path: photoPath })
+      .select("id")
+      .single();
     if (photoError) {
       // The issue is saved; only the photo link failed.
       console.error("photo insert failed:", photoError.message);
       await removeFiles(supabase, [photoPath]);
       return { issue: created, error: "Issue saved, but the photo could not be attached." };
     }
+    return { issue: { ...created, photoId: photo.id } };
   }
   return { issue: created };
 }
@@ -251,6 +253,68 @@ export async function deleteIssue(visitId: string, issueId: string): Promise<Act
   if (data.length === 0) return { error: NOT_EDITABLE };
 
   await removeFiles(supabase, (photos ?? []).map((p) => p.storage_path));
+  return {};
+}
+
+// The browser uploads to visit-photos/<visit id>/<uuid>.jpg; only accept that.
+function isVisitPhotoPath(visitId: string, path: string) {
+  return new RegExp(`^${visitId}/[0-9a-f-]{36}\\.jpg$`).test(path);
+}
+
+// Links an uploaded photo to an issue on this visit (new or already open).
+export async function addIssuePhoto(
+  visitId: string,
+  issueId: string,
+  photoPath: string,
+): Promise<ActionState & { photoId?: string }> {
+  if (!z.uuid().safeParse(issueId).success || !isVisitPhotoPath(visitId, photoPath)) {
+    return { error: "Invalid photo." };
+  }
+  const supabase = await createClient();
+
+  // The issue must belong to the same hub as the visit.
+  const [{ data: visit }, { data: issue }] = await Promise.all([
+    supabase.from("visits").select("hub_id").eq("id", visitId).maybeSingle(),
+    supabase.from("issues").select("hub_id").eq("id", issueId).maybeSingle(),
+  ]);
+  if (!visit || !issue || visit.hub_id !== issue.hub_id) {
+    await removeFiles(supabase, [photoPath]);
+    return { error: "Invalid photo." };
+  }
+
+  // Row-level security: only inspectors/admins, only while the visit is a draft.
+  const { data, error } = await supabase
+    .from("photos")
+    .insert({ visit_id: visitId, issue_id: issueId, storage_path: photoPath })
+    .select("id")
+    .single();
+  if (error) {
+    await removeFiles(supabase, [photoPath]);
+    return fail("photo insert", error.message);
+  }
+  return { photoId: data.id };
+}
+
+// Deletes a photo (row and file) from a draft visit.
+export async function deletePhoto(visitId: string, photoId: string): Promise<ActionState> {
+  if (!z.uuid().safeParse(photoId).success) return { error: "Invalid photo." };
+  const supabase = await createClient();
+  const { data: photo } = await supabase
+    .from("photos")
+    .select("storage_path")
+    .eq("id", photoId)
+    .eq("visit_id", visitId)
+    .maybeSingle();
+  if (!photo) return { error: "Photo not found." };
+
+  const { data, error } = await supabase
+    .from("photos")
+    .delete()
+    .eq("id", photoId)
+    .select("id");
+  if (error) return fail("photo delete", error.message);
+  if (data.length === 0) return { error: NOT_EDITABLE };
+  await removeFiles(supabase, [photo.storage_path]);
   return {};
 }
 

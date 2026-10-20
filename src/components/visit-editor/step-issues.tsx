@@ -16,6 +16,7 @@ import {
 } from "@/lib/visit-form";
 import type { EditorIssue, NewIssue } from "@/lib/visits";
 import { ChoiceChips } from "./choice-chips";
+import { IssuePhotos } from "./issue-photos";
 import { NewIssueDrawer } from "./new-issue-drawer";
 
 const CHOICES: { value: IssueUpdateChoice; label: string }[] = [
@@ -72,7 +73,12 @@ export function StepIssues({
         ) : (
           <div className="grid gap-3 lg:grid-cols-2">
             {openIssues.map((issue) => (
-              <OpenIssueCard key={issue.id} issue={issue} readOnly={readOnly} />
+              <OpenIssueCard
+                key={issue.id}
+                issue={issue}
+                visitId={visitId}
+                readOnly={readOnly}
+              />
             ))}
           </div>
         )}
@@ -134,9 +140,11 @@ function IssueHeading({ issue }: { issue: EditorIssue | NewIssue }) {
 
 const OpenIssueCard = memo(function OpenIssueCard({
   issue,
+  visitId,
   readOnly,
 }: {
   issue: EditorIssue;
+  visitId: string;
   readOnly: boolean;
 }) {
   const key = issueFormKey(issue.id);
@@ -182,6 +190,13 @@ const OpenIssueCard = memo(function OpenIssueCard({
       {noteWithoutState && (
         <p className="text-xs text-destructive">Pick a state to save the note.</p>
       )}
+      <IssuePhotos
+        visitId={visitId}
+        issueId={issue.id}
+        initial={issue.photos}
+        alt={issue.title}
+        readOnly={readOnly}
+      />
     </article>
   );
 });
@@ -213,25 +228,13 @@ function NewIssueCard({
     <article className="flex flex-col gap-3 rounded-xl border border-primary/40 bg-primary/5 p-3">
       <IssueHeading issue={issue} />
       {issue.description && <p className="text-sm whitespace-pre-line">{issue.description}</p>}
-      {issue.photos.length > 0 && (
-        <ul className="flex flex-wrap gap-2">
-          {issue.photos.map((photo) =>
-            photo.url ? (
-              <li key={photo.id}>
-                <a href={photo.url} target="_blank" rel="noreferrer">
-                  {/* Signed URLs change every load, so next/image caching doesn't help here. */}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={photo.url}
-                    alt={photo.caption ?? issue.title}
-                    className="size-20 rounded-lg border object-cover"
-                  />
-                </a>
-              </li>
-            ) : null,
-          )}
-        </ul>
-      )}
+      <IssuePhotos
+        visitId={visitId}
+        issueId={issue.id}
+        initial={issue.photos}
+        alt={issue.title}
+        readOnly={readOnly}
+      />
       {error && <p className="text-sm text-destructive">{error}</p>}
       {!readOnly && (
         <div className="flex justify-end gap-2">

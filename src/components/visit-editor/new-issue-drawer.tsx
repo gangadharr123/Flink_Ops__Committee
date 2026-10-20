@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { Camera, X } from "lucide-react";
+import { X } from "lucide-react";
 import { createIssue } from "@/app/(app)/visits/actions";
+import { PhotoPicker } from "@/components/photos/photo-picker";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -21,9 +22,7 @@ import {
   type IssueCategory,
   type Severity,
 } from "@/lib/issues";
-import { resizeImage } from "@/lib/resize-image";
-import { createClient as createBrowserSupabase } from "@/lib/supabase/client";
-import { uuid } from "@/lib/uuid";
+import { removeUploadedPhoto, uploadVisitPhoto } from "@/lib/upload-photo";
 import type { NewIssue } from "@/lib/visits";
 import { ChoiceChips } from "./choice-chips";
 
@@ -52,14 +51,12 @@ export function NewIssueDrawer({
   const [title, setTitle] = useState("");
   const [severity, setSeverity] = useState<Severity | null>(null);
   const [description, setDescription] = useState("");
-  // The resized photo and a local preview link for it.
+  // The compressed photo and a local preview link for it.
   const [photo, setPhoto] = useState<{ blob: Blob; preview: string } | null>(null);
-  const [preparing, setPreparing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
-  const canSave =
-    category !== "" && title.trim().length >= 3 && severity !== null && !preparing;
+  const canSave = category !== "" && title.trim().length >= 3 && severity !== null;
 
   function reset() {
     setCategory("");
@@ -67,21 +64,6 @@ export function NewIssueDrawer({
     setSeverity(null);
     setDescription("");
     setPhoto(null);
-  }
-
-  async function pickPhoto(file: File | undefined) {
-    if (!file) return;
-    setError(null);
-    setPreparing(true);
-    try {
-      const blob = await resizeImage(file);
-      if (photo) URL.revokeObjectURL(photo.preview);
-      setPhoto({ blob, preview: URL.createObjectURL(blob) });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not read the photo.");
-    } finally {
-      setPreparing(false);
-    }
   }
 
   function removePhoto() {
@@ -96,17 +78,13 @@ export function NewIssueDrawer({
     const chosen = photo;
     setError(null);
     startTransition(async () => {
-      // 1. Upload the photo straight from the phone to Storage. The storage
-      //    rules only accept it inside a draft visit's folder.
-      const supabase = createBrowserSupabase();
+      // 1. Upload the photo straight from the phone to Storage.
       let photoPath: string | undefined;
       if (chosen) {
-        photoPath = `${visitId}/${uuid()}.jpg`;
-        const { error: uploadError } = await supabase.storage
-          .from("visit-photos")
-          .upload(photoPath, chosen.blob, { contentType: "image/jpeg" });
-        if (uploadError) {
-          setError("Photo upload failed. Check your connection and try again.");
+        try {
+          photoPath = await uploadVisitPhoto(visitId, chosen.blob);
+        } catch (e) {
+          setError(e instanceof Error ? e.message : "Photo upload failed.");
           return;
         }
       }
@@ -114,11 +92,11 @@ export function NewIssueDrawer({
       // 2. Create the issue and link the photo.
       const result = await createIssue(visitId, { ...input, photoPath });
       if (!result.issue) {
-        if (photoPath) await supabase.storage.from("visit-photos").remove([photoPath]);
+        if (photoPath) await removeUploadedPhoto(photoPath).catch(() => {});
         setError(result.error ?? "Could not add the issue.");
         return;
       }
-      const photoLinked = Boolean(chosen && !result.error);
+      const photoId = result.issue.photoId;
       onCreated({
         id: result.issue.id,
         key: result.issue.key,
@@ -129,10 +107,7 @@ export function NewIssueDrawer({
         excluded: false,
         visitsSeen: 1,
         isRecurring: false,
-        photos:
-          photoLinked && chosen
-            ? [{ id: photoPath!, url: chosen.preview, caption: null }]
-            : [],
+        photos: photoId && chosen ? [{ id: photoId, url: chosen.preview, caption: null }] : [],
       });
       reset();
       // Saved, but the photo didn't attach: keep the sheet open to say so.
@@ -209,7 +184,7 @@ export function NewIssueDrawer({
               <span className="text-sm font-medium">Photo (optional)</span>
               {photo ? (
                 <div className="flex items-center gap-3">
-                  {/* eslint-disable-next-line @next/next/no-img-element -- local preview of the resized photo */}
+                  {/* eslint-disable-next-line @next/next/no-img-element -- local preview of the compressed photo */}
                   <img
                     src={photo.preview}
                     alt="Selected photo"
@@ -220,21 +195,7 @@ export function NewIssueDrawer({
                   </Button>
                 </div>
               ) : (
-                // The label opens the phone's camera / photo library picker.
-                <label className="flex h-12 cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed text-base hover:bg-muted">
-                  <Camera className="size-5" />
-                  {preparing ? "Preparing photo..." : "Take or choose photo"}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="sr-only"
-                    disabled={preparing}
-                    onChange={(e) => {
-                      void pickPhoto(e.target.files?.[0]);
-                      e.target.value = "";
-                    }}
-                  />
-                </label>
+                <PhotoPicker onPicked={setPhoto} />
               )}
             </div>
 

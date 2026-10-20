@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { RecurringBadge, SeverityBadge } from "@/components/issues/issue-badges";
+import { PhotoThumbs } from "@/components/photos/photo-thumbs";
 import { Badge } from "@/components/ui/badge";
 import { getCurrentUser } from "@/lib/auth";
 import { formatDate } from "@/lib/format";
@@ -120,22 +121,9 @@ function TimelineItem({ entry }: { entry: TimelineEntry }) {
       </p>
       {entry.note && <p className="text-sm text-muted-foreground">{entry.note}</p>}
       {entry.photos.length > 0 && (
-        <ul className="mt-2 flex flex-wrap gap-2">
-          {entry.photos.map((photo) =>
-            photo.url ? (
-              <li key={photo.id}>
-                <a href={photo.url} target="_blank" rel="noreferrer">
-                  {/* eslint-disable-next-line @next/next/no-img-element -- signed URLs change every load */}
-                  <img
-                    src={photo.url}
-                    alt={photo.caption ?? "Issue photo"}
-                    className="size-24 rounded-lg border object-cover"
-                  />
-                </a>
-              </li>
-            ) : null,
-          )}
-        </ul>
+        <div className="mt-2">
+          <PhotoThumbs photos={entry.photos} alt={`Photo from ${entry.visitLabel}`} size="lg" />
+        </div>
       )}
     </li>
   );

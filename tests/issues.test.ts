@@ -181,6 +181,51 @@ describe("photo storage", () => {
     });
   });
 
+  it("lets a viewer see photos (needed for signed links) but not add any", async () => {
+    await t.asUser(INSPECTOR_ID, async () => {
+      const visit = await createVisit("Mainz", "2026-10-11");
+      const issueId = await createIssue(visit, "Photo test");
+      await upload(`${visit}/a.jpg`);
+      await t.db.query(
+        "insert into public.photos (visit_id, issue_id, storage_path) values ($1, $2, $3)",
+        [visit, issueId, `${visit}/a.jpg`],
+      );
+
+      await t.setUser(VIEWER_ID);
+      const files = await t.db.query("select 1 from storage.objects where name = $1", [
+        `${visit}/a.jpg`,
+      ]);
+      const rows = await t.db.query("select 1 from public.photos where visit_id = $1", [visit]);
+      expect([files.rows.length, rows.rows.length]).toEqual([1, 1]);
+
+      await expect(
+        t.db.query(
+          "insert into public.photos (visit_id, issue_id, storage_path) values ($1, $2, $3)",
+          [visit, issueId, `${visit}/b.jpg`],
+        ),
+      ).rejects.toThrow(/row-level security/);
+    });
+  });
+
+  it("keeps a submitted visit's photos fixed for inspectors", async () => {
+    await t.asUser(INSPECTOR_ID, async () => {
+      const visit = await createVisit("Mainz", "2026-10-12");
+      const issueId = await createIssue(visit, "Fixed photo");
+      await upload(`${visit}/a.jpg`);
+      await t.db.query(
+        "insert into public.photos (visit_id, issue_id, storage_path) values ($1, $2, $3)",
+        [visit, issueId, `${visit}/a.jpg`],
+      );
+      await submit(visit);
+
+      const delRow = await t.db.query("delete from public.photos where visit_id = $1", [visit]);
+      const delFile = await t.db.query("delete from storage.objects where name = $1", [
+        `${visit}/a.jpg`,
+      ]);
+      expect([delRow.affectedRows, delFile.affectedRows]).toEqual([0, 0]);
+    });
+  });
+
   it("blocks uploads to submitted visits, bad paths and viewers", async () => {
     await t.asUser(INSPECTOR_ID, async () => {
       const visit = await createVisit("Mainz", "2026-10-10");
