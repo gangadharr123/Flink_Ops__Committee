@@ -40,3 +40,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Real visit reports: too large for git, kept locally only
+/docs/*.docx
+!/docs/sample-report.docx
