@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
-import { FileDown, X } from "lucide-react";
+import Link from "next/link";
+import { ClipboardCopy, FileDown, X } from "lucide-react";
 import { submitVisit } from "@/app/(app)/visits/actions";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -123,6 +124,23 @@ export function VisitEditor({
           <Badge variant={visit.status === "draft" ? "outline" : "secondary"}>
             {visit.status === "draft" ? "Draft" : "Submitted"}
           </Badge>
+          {visit.status === "draft" && (
+            // Drafts: Airtable answers are available too, saved first.
+            <button
+              type="button"
+              onClick={() =>
+                startLeaving(async () => {
+                  await autosave.saveNow();
+                  router.push(`/visits/${visit.id}/airtable`);
+                })
+              }
+              aria-label="Airtable answers"
+              title="Airtable answers"
+              className="-mr-2 flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-muted"
+            >
+              <ClipboardCopy className="size-5" />
+            </button>
+          )}
         </header>
 
         <StepProgress current={step} onSelect={goTo} />
@@ -140,14 +158,22 @@ export function VisitEditor({
                 : "Read-only: your role can't edit visits."}
             </p>
             {visit.status === "submitted" && (
-              // A plain link (not next/link): the browser downloads the file.
-              <a
-                href={`/visits/${visit.id}/report`}
-                download
-                className={cn(buttonVariants(), "h-12 shrink-0 text-base")}
-              >
-                <FileDown /> Download report
-              </a>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                {/* A plain link (not next/link): the browser downloads the file. */}
+                <a
+                  href={`/visits/${visit.id}/report`}
+                  download
+                  className={cn(buttonVariants(), "h-12 shrink-0 text-base")}
+                >
+                  <FileDown /> Download report
+                </a>
+                <Link
+                  href={`/visits/${visit.id}/airtable`}
+                  className={cn(buttonVariants({ variant: "outline" }), "h-12 shrink-0 text-base")}
+                >
+                  <ClipboardCopy /> Airtable answers
+                </Link>
+              </div>
             )}
           </div>
         )}
