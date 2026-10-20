@@ -174,6 +174,16 @@ describe("generated SQL", () => {
     });
   });
 
+  it("stops if a visit number is taken by a visit with another date (e.g. a test visit)", async () => {
+    const clashing = structuredClone(SEED);
+    clashing.visits[0].visit_date = "2026-01-01";
+    clashing.issues = []; // keep the file valid on its own
+    const clashSql = toSql(validate(clashing).data, "me@example.com");
+    await expect(t.db.exec(clashSql)).rejects.toThrow(
+      /Darmstadt visit 1 \(database: 2026-09-18, file: 2026-01-01\)/,
+    );
+  });
+
   it("stops with a clear message if the email has no user", async () => {
     const other = toSql(validate(SEED).data, "nobody@example.com");
     await expect(t.db.exec(other)).rejects.toThrow(/No HubCheck user with email nobody@example.com/);

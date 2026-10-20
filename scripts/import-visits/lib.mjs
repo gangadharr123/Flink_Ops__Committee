@@ -272,6 +272,21 @@ do $$ begin
   end if;
 end $$;
 
+-- A visit with the same hub + number but another date is not this file's
+-- visit (e.g. a test visit): stop instead of linking data to it.
+do $$
+declare clash text;
+begin
+  select string_agg(v.hub || ' visit ' || v.visit_number || ' (database: ' || x.visit_date
+                    || ', file: ' || v.visit_date || ')', '; ') into clash
+  from _visits v join public.hubs h on h.name = v.hub
+  join public.visits x on x.hub_id = h.id and x.visit_number = v.visit_number
+  where x.visit_date <> v.visit_date;
+  if clash is not null then
+    raise exception 'Visits with these numbers already exist with other dates: %. Delete test visits first, or fix the file.', clash;
+  end if;
+end $$;
+
 -- Insert visits that don't exist yet (hub + visit number), as submitted.
 create temp table _new_visits (visit_key text, id uuid) on commit drop;
 with inserted as (
