@@ -206,7 +206,7 @@ export function NewIssueDrawer({
             )}
           </div>
 
-          <DrawerFooter className="pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <DrawerFooter className="pb-[calc(max(1rem,env(safe-area-inset-bottom))+var(--badge-clearance))]">
             <Button
               type="button"
               onClick={save}

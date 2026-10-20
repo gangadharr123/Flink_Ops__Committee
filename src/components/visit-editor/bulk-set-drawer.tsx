@@ -134,7 +134,7 @@ export function BulkSetDrawer({
             </div>
           </div>
 
-          <DrawerFooter className="pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <DrawerFooter className="pb-[calc(max(1rem,env(safe-area-inset-bottom))+var(--badge-clearance))]">
             <Button type="button" onClick={apply} disabled={!canApply} className="h-12 text-base">
               {numbers.length > 0
                 ? `Apply to ${numbers.length} shelf${numbers.length === 1 ? "" : "s"}`

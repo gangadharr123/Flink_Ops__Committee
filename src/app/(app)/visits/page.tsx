@@ -65,7 +65,7 @@ async function VisitList({
 
       {canCreate && (
         // On phones this sits above the tab bar, within thumb reach.
-        <div className="sticky bottom-20 mt-2 md:static">
+        <div className="sticky bottom-[calc(5rem+env(safe-area-inset-bottom)+var(--badge-clearance))] mt-2 md:static">
           <Link
             href="/visits/new"
             className={cn(

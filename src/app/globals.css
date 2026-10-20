@@ -82,6 +82,10 @@
   --viz-warning: #fab219;
   --viz-good: #0ca30c;
   --viz-neutral: #a3a29d;
+  /* Empty space kept at the bottom of every bottom bar and the page, so the
+     "Powered by Netlify" badge Netlify adds in the bottom-right corner never
+     covers a button. Set to 0 if the badge goes away. */
+  --badge-clearance: 4rem;
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);

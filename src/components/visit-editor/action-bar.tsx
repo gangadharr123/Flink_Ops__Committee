@@ -42,7 +42,8 @@ export function ActionBar({
 }) {
   const online = useOnline();
   return (
-    <div className="fixed inset-x-0 bottom-0 z-20 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:left-60">
+    // Bottom padding: iPhone home indicator + room for the Netlify badge.
+    <div className="fixed inset-x-0 bottom-0 z-20 border-t bg-background/95 pb-[calc(env(safe-area-inset-bottom)+var(--badge-clearance))] backdrop-blur md:left-60">
       {status === "error" && error && (
         <p className="border-b bg-destructive/10 px-4 py-1.5 text-center text-xs text-destructive" role="alert">
           {error}

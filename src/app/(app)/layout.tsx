@@ -29,9 +29,12 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
           </Suspense>
         </header>
 
-        {/* Bottom padding keeps content clear of the phone tab bar
-            (or the visit editor's Back / Next bar). */}
-        <main className="flex-1 p-4 pb-24 md:p-8 md:pb-8">{children}</main>
+        {/* Bottom padding keeps content clear of the phone tab bar or the
+            visit editor's Back / Next bar (5rem, on laptops too), the iPhone
+            home indicator, and the Netlify badge. */}
+        <main className="flex-1 p-4 pb-[calc(5rem+env(safe-area-inset-bottom)+var(--badge-clearance))] md:p-8 md:pb-[calc(5rem+var(--badge-clearance))]">
+          {children}
+        </main>
       </div>
 
       <BottomNav />
