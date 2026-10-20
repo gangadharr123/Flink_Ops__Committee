@@ -1,0 +1,42 @@
+# Keeps the free Supabase project awake. Supabase pauses free projects
+# after 7 days without activity; this makes one small database read every
+# 3 days. Needs two repository secrets (see README, "Keep Supabase awake"):
+#   SUPABASE_URL              e.g. https://abcd1234.supabase.co
+#   SUPABASE_PUBLISHABLE_KEY  the publishable (public) key, never the secret one
+name: Keep Supabase awake
+
+on:
+  schedule:
+    # 06:17 UTC on day 1, 4, 7, ... of each month (at most 4 days apart).
+    - cron: "17 6 */3 * *"
+  # Also lets you run it by hand: Actions > Keep Supabase awake > Run workflow.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Read one row through the Supabase API
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ] || [ -z "$SUPABASE_PUBLISHABLE_KEY" ]; then
+            echo "::error::Add the SUPABASE_URL and SUPABASE_PUBLISHABLE_KEY repository secrets."
+            exit 1
+          fi
+          # Logged out, row-level security returns an empty list, but the
+          # query still runs in the database, which counts as activity.
+          status=$(curl --silent --show-error --retry 3 --retry-delay 10 \
+            --output /dev/null --write-out "%{http_code}" \
+            --header "apikey: $SUPABASE_PUBLISHABLE_KEY" \
+            "$SUPABASE_URL/rest/v1/hubs?select=id&limit=1")
+          echo "Supabase answered HTTP $status"
+          if [ "$status" != "200" ]; then
+            echo "::error::Supabase did not answer 200. The project may be paused: restore it in the Supabase dashboard."
+            exit 1
+          fi
