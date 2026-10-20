@@ -124,6 +124,20 @@ Enforced by row-level security in `supabase/migrations/`.
   plus the report, Airtable and dashboard text and numbers.
 - `npm run db:types` regenerates `src/lib/database.types.ts` from the migrations. Run it after adding a migration.
 
+## Import past visits (one-off)
+
+1. Prepare a JSON file in the format of `supabase/seed/past_visits.json` (`format_version: 1`):
+   `visits` (with `shelf_checks` and `staff_feedback`) and `issues` whose `updates` link the same
+   issue across visits by `visit_key`. Full rules: top of `scripts/import-visits/lib.mjs`.
+2. Run `npm run import:visits -- supabase/seed/past_visits.json you@example.com`
+   (the email of your HubCheck login; visits are recorded under that user).
+   It checks the whole file first and lists every problem; nothing is written until it's clean.
+3. Open the generated `past_visits.import.sql`, paste all of it into the Supabase SQL editor and run.
+   All or nothing; the result shows rows added per table. Running it again adds nothing.
+
+Imported visits are **submitted**. Issue status, first-seen and resolved visits come from the updates.
+The `.import.sql` file holds your data and email, so git ignores it.
+
 ## Seed data
 
 - `supabase/seed/shelves.csv` is loaded into the database by the `seed_hubs_shelves` migration.
