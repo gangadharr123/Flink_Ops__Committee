@@ -70,6 +70,7 @@ describe("isShelfChanged", () => {
 describe("buildPatch", () => {
   const base: VisitFormValues = {
     manager_present: "unknown",
+    stock_and_space: "",
     overall_impression: "",
     notes: "",
     shelves: { n1: { condition: "dusty", score: "3", comment: "" } },

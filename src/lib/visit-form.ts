@@ -64,6 +64,7 @@ export type IssueUpdateValue = { state: IssueUpdateChoice | null; note: string }
 
 export type VisitFormValues = {
   manager_present: ManagerPresent;
+  stock_and_space: string;
   overall_impression: string;
   notes: string;
   shelves: Record<string, ShelfValue>;
@@ -150,6 +151,7 @@ export function isShelfChanged(
 export type VisitPatch = {
   visit?: {
     manager_present?: boolean | null;
+    stock_and_space?: string | null;
     overall_impression?: string | null;
     notes?: string | null;
     current_step?: VisitStep;
@@ -216,6 +218,8 @@ export function buildPatch(
   const visit: NonNullable<VisitPatch["visit"]> = {};
   if (saved.manager_present !== current.manager_present)
     visit.manager_present = managerToDb(current.manager_present);
+  if (saved.stock_and_space !== current.stock_and_space)
+    visit.stock_and_space = nullIfEmpty(current.stock_and_space);
   if (saved.overall_impression !== current.overall_impression)
     visit.overall_impression = nullIfEmpty(current.overall_impression);
   if (saved.notes !== current.notes) visit.notes = nullIfEmpty(current.notes);

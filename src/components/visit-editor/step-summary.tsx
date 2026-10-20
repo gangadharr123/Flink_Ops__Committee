@@ -74,12 +74,23 @@ export function StepSummary({
       </div>
 
       <div className="flex flex-col gap-2">
+        <Label htmlFor="stock_and_space">Stock and space</Label>
+        <Textarea
+          id="stock_and_space"
+          rows={3}
+          readOnly={readOnly}
+          placeholder="Overstock, access to stock, back room, space use... One point per line."
+          {...register("stock_and_space")}
+        />
+      </div>
+
+      <div className="flex flex-col gap-2">
         <Label htmlFor="overall_impression">Overall impression</Label>
         <Textarea
           id="overall_impression"
           rows={4}
           readOnly={readOnly}
-          placeholder="How did the hub look and feel overall?"
+          placeholder="How did the hub look and feel overall? One point per line."
           {...register("overall_impression")}
         />
       </div>

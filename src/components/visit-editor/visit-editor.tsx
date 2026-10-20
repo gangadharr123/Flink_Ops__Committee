@@ -65,6 +65,7 @@ export function VisitEditor({
       form.reset({
         ...data.values,
         ...backup,
+        stock_and_space: backup.stock_and_space ?? data.values.stock_and_space,
         issues: { ...data.values.issues, ...backup.issues },
       });
       // eslint-disable-next-line react-hooks/set-state-in-effect -- one-off notice after reading localStorage, which only exists in the browser

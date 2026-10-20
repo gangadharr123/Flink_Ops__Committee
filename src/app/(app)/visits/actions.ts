@@ -53,6 +53,7 @@ const patchSchema = z.object({
   visit: z
     .object({
       manager_present: z.boolean().nullable(),
+      stock_and_space: z.string().max(5000).nullable(),
       overall_impression: z.string().max(5000).nullable(),
       notes: z.string().max(5000).nullable(),
       current_step: z.enum(Constants.public.Enums.visit_step),

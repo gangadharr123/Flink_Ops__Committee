@@ -347,6 +347,7 @@ export type Database = {
           overall_impression: string | null
           previous_visit_id: string | null
           status: Database["public"]["Enums"]["visit_status"]
+          stock_and_space: string | null
           submitted_at: string | null
           updated_at: string
           visit_date: string
@@ -365,6 +366,7 @@ export type Database = {
           overall_impression?: string | null
           previous_visit_id?: string | null
           status?: Database["public"]["Enums"]["visit_status"]
+          stock_and_space?: string | null
           submitted_at?: string | null
           updated_at?: string
           visit_date: string
@@ -383,6 +385,7 @@ export type Database = {
           overall_impression?: string | null
           previous_visit_id?: string | null
           status?: Database["public"]["Enums"]["visit_status"]
+          stock_and_space?: string | null
           submitted_at?: string | null
           updated_at?: string
           visit_date?: string

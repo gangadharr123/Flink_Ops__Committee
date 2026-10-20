@@ -74,7 +74,7 @@ export async function getVisitForEditor(visitId: string) {
     .from("visits")
     .select(
       `id, hub_id, visit_number, label, visit_date, status, current_step,
-       submitted_at, previous_visit_id, manager_present, overall_impression,
+       submitted_at, previous_visit_id, manager_present, stock_and_space, overall_impression,
        notes, hub:hubs (name)`,
     )
     .eq("id", visitId)
@@ -193,6 +193,7 @@ export async function getVisitForEditor(visitId: string) {
   const values: VisitFormValues = {
     manager_present:
       visit.manager_present === null ? "unknown" : visit.manager_present ? "yes" : "no",
+    stock_and_space: visit.stock_and_space ?? "",
     overall_impression: visit.overall_impression ?? "",
     notes: visit.notes ?? "",
     shelves: Object.fromEntries(
