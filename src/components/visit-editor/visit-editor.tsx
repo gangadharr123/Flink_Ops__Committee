@@ -3,10 +3,12 @@
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
-import { X } from "lucide-react";
+import { FileDown, X } from "lucide-react";
 import { submitVisit } from "@/app/(app)/visits/actions";
 import { Badge } from "@/components/ui/badge";
+import { buttonVariants } from "@/components/ui/button";
 import { formatDate } from "@/lib/format";
+import { cn } from "@/lib/utils";
 import { shelfKey, STEPS, type VisitFormValues, type VisitStep } from "@/lib/visit-form";
 import type { VisitEditorData } from "@/lib/visits";
 import { ActionBar } from "./action-bar";
@@ -131,11 +133,23 @@ export function VisitEditor({
           </p>
         )}
         {readOnly && (
-          <p className="rounded-lg bg-muted p-3 text-sm">
-            {visit.status === "submitted"
-              ? `Submitted${visit.submittedAt ? ` on ${formatDate(visit.submittedAt.slice(0, 10))}` : ""}. This visit is read-only.`
-              : "Read-only: your role can't edit visits."}
-          </p>
+          <div className="flex flex-col gap-3 rounded-lg bg-muted p-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+            <p>
+              {visit.status === "submitted"
+                ? `Submitted${visit.submittedAt ? ` on ${formatDate(visit.submittedAt.slice(0, 10))}` : ""}. This visit is read-only.`
+                : "Read-only: your role can't edit visits."}
+            </p>
+            {visit.status === "submitted" && (
+              // A plain link (not next/link): the browser downloads the file.
+              <a
+                href={`/visits/${visit.id}/report`}
+                download
+                className={cn(buttonVariants(), "h-12 shrink-0 text-base")}
+              >
+                <FileDown /> Download report
+              </a>
+            )}
+          </div>
         )}
 
         {step === "shelves" && <StepShelves shelves={data.shelves} readOnly={readOnly} />}

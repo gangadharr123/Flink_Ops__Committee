@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { Plus } from "lucide-react";
+import { FileDown, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth";
@@ -84,10 +84,11 @@ async function VisitList({
 function VisitRow({ visit }: { visit: VisitListItem }) {
   const isDraft = visit.status === "draft";
   return (
-    <li>
+    // The download button sits beside the row link: a link can't contain a link.
+    <li className="flex items-stretch gap-2">
       <Link
         href={`/visits/${visit.id}`}
-        className="flex min-h-16 items-center justify-between gap-3 rounded-xl border bg-card p-4 transition-colors hover:bg-muted"
+        className="flex min-h-16 min-w-0 flex-1 items-center justify-between gap-3 rounded-xl border bg-card p-4 transition-colors hover:bg-muted"
       >
         <div className="min-w-0">
           <p className="truncate font-medium">
@@ -106,6 +107,17 @@ function VisitRow({ visit }: { visit: VisitListItem }) {
           {isDraft ? "Draft" : "Submitted"}
         </Badge>
       </Link>
+      {!isDraft && (
+        <a
+          href={`/visits/${visit.id}/report`}
+          download
+          aria-label={`Download report for ${visit.hub.name} ${visit.label ?? `Visit ${visit.visit_number}`}`}
+          title="Download report"
+          className="flex w-14 shrink-0 items-center justify-center rounded-xl border bg-card transition-colors hover:bg-muted"
+        >
+          <FileDown className="size-5" />
+        </a>
+      )}
     </li>
   );
 }
