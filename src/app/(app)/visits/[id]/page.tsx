@@ -31,7 +31,14 @@ async function VisitLoader({
   const canEdit = user.role === "inspector" || user.role === "admin";
 
   // key: after submitting, the editor starts fresh in read-only mode.
-  return <VisitEditor key={data.visit.status} data={data} canEdit={canEdit} />;
+  return (
+    <VisitEditor
+      key={data.visit.status}
+      data={data}
+      canEdit={canEdit}
+      isAdmin={user.role === "admin"}
+    />
+  );
 }
 
 function EditorSkeleton() {

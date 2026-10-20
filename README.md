@@ -35,6 +35,7 @@ named `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`.
    6. `20261021000000_issues.sql` (also creates the private `visit-photos` storage bucket)
    7. `20261022000000_stock_and_space.sql`
    8. `20261023000000_airtable_answers.sql`
+   9. `20261024000000_delete_visit.sql` (deleting a visit keeps issues other visits also recorded)
 2. **Invite-only login**: Authentication > Sign In / Providers: turn off "Allow new users to sign up".
    Add people under Authentication > Users > Add user (or Invite).
 3. **Redirect URLs**: Authentication > URL Configuration:

@@ -234,6 +234,7 @@ export async function getVisitForEditor(visitId: string) {
       id: visit.id,
       hubName: visit.hub.name,
       label: visit.label ?? `Visit ${visit.visit_number}`,
+      number: visit.visit_number,
       visitDate: visit.visit_date,
       status: visit.status,
       currentStep: visit.current_step,

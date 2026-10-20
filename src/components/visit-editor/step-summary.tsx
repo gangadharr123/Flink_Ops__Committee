@@ -1,22 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
-import { Trash2 } from "lucide-react";
-import { deleteVisit } from "@/app/(app)/visits/actions";
-import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { useOnline } from "@/lib/use-online";
 import {
   isShelfChanged,
   issueFormKey,
@@ -26,7 +12,7 @@ import {
 } from "@/lib/visit-form";
 import type { EditorIssue, EditorShelf } from "@/lib/visits";
 import { ChoiceChips } from "./choice-chips";
-import { clearBackup } from "./use-autosave";
+import { DeleteVisitButton } from "./delete-visit-button";
 
 const MANAGER_OPTIONS: { value: ManagerPresent; label: string }[] = [
   { value: "yes", label: "Yes" },
@@ -40,16 +26,15 @@ export function StepSummary({
   shelves,
   openIssues,
   newIssueCount,
-  visitId,
   readOnly,
-  canDelete,
+  deletable,
 }: {
   shelves: EditorShelf[];
   openIssues: EditorIssue[];
   newIssueCount: number;
-  visitId: string;
   readOnly: boolean;
-  canDelete: boolean;
+  // the visit, when "Delete draft" should show; null otherwise
+  deletable: React.ComponentProps<typeof DeleteVisitButton>["visit"] | null;
 }) {
   const { control, register } = useFormContext<VisitFormValues>();
   const counts = useVisitCounts(shelves, openIssues);
@@ -119,7 +104,13 @@ export function StepSummary({
         <Stat label="Staff spoken to" value={counts.staff} />
       </dl>
 
-      {canDelete && <DeleteDraft visitId={visitId} />}
+      {deletable && (
+        <DeleteVisitButton
+          visit={deletable}
+          label="Delete draft"
+          className="h-12 self-start text-base"
+        />
+      )}
     </section>
   );
 }
@@ -169,59 +160,4 @@ export function useVisitCounts(shelves: EditorShelf[], openIssues: EditorIssue[]
     staffWithoutRole: staff.filter((s) => s.staff_role === null).length,
     issuesNotUpdated: openIssues.filter((i) => !issues[issueFormKey(i.id)]?.state).length,
   };
-}
-
-function DeleteDraft({ visitId }: { visitId: string }) {
-  const [open, setOpen] = useState(false);
-  const online = useOnline();
-  const [error, setError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
-
-  function confirm() {
-    startTransition(async () => {
-      clearBackup(visitId);
-      // On success the action redirects to /visits.
-      const result = await deleteVisit(visitId);
-      if (result?.error) setError(result.error);
-    });
-  }
-
-  return (
-    <>
-      <Button
-        type="button"
-        variant="destructive"
-        onClick={() => setOpen(true)}
-        disabled={!online}
-        title={online ? undefined : "Needs a connection"}
-        className="h-12 self-start text-base"
-      >
-        <Trash2 /> Delete draft
-      </Button>
-      <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete this draft?</AlertDialogTitle>
-            <AlertDialogDescription>
-              All shelf checks and staff feedback in this visit are deleted
-              too. This can&apos;t be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          {error && <p className="text-sm text-destructive">{error}</p>}
-          <AlertDialogFooter>
-            <AlertDialogCancel className="h-11">Cancel</AlertDialogCancel>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={confirm}
-              disabled={pending}
-              className="h-11"
-            >
-              {pending ? "Deleting..." : "Delete"}
-            </Button>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
-  );
 }

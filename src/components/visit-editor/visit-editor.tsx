@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import { shelfKey, STEPS, type VisitFormValues, type VisitStep } from "@/lib/visit-form";
 import type { VisitEditorData } from "@/lib/visits";
 import { ActionBar } from "./action-bar";
+import { DeleteVisitButton } from "./delete-visit-button";
 import { StepIssues } from "./step-issues";
 import { StepProgress } from "./step-progress";
 import { StepShelves } from "./step-shelves";
@@ -28,9 +29,11 @@ import { clearBackup, readBackup, useAutosave } from "./use-autosave";
 export function VisitEditor({
   data,
   canEdit,
+  isAdmin,
 }: {
   data: VisitEditorData;
   canEdit: boolean;
+  isAdmin: boolean;
 }) {
   const { visit } = data;
   const router = useRouter();
@@ -185,6 +188,14 @@ export function VisitEditor({
                 >
                   <ClipboardCopy /> Airtable answers
                 </Link>
+                {isAdmin && (
+                  // Admins only (enforced by row-level security too).
+                  <DeleteVisitButton
+                    visit={visit}
+                    label="Delete visit"
+                    className="h-12 shrink-0 text-base"
+                  />
+                )}
               </div>
             )}
           </div>
@@ -209,9 +220,8 @@ export function VisitEditor({
             shelves={data.shelves}
             openIssues={data.openIssues}
             newIssueCount={newIssues.length}
-            visitId={visit.id}
             readOnly={readOnly}
-            canDelete={canEdit && visit.status === "draft"}
+            deletable={canEdit && visit.status === "draft" ? visit : null}
           />
         )}
       </div>

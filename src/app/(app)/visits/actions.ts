@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { getCurrentUser } from "@/lib/auth";
 import { Constants } from "@/lib/database.types";
 import { createClient } from "@/lib/supabase/server";
 import type { VisitPatch } from "@/lib/visit-form";
@@ -343,30 +344,44 @@ export async function submitVisit(visitId: string): Promise<ActionState> {
   return {};
 }
 
+// Deletes a visit. Admins: any visit. Inspectors: drafts only.
+// Row-level security enforces the same rule; this check just gives a clear
+// message. The database removes the visit's shelf checks, staff feedback,
+// photo rows, issue updates and issues recorded only on this visit (see the
+// delete_visit migration). Photo files in Storage are removed here.
 export async function deleteVisit(visitId: string): Promise<ActionState> {
-  const supabase = await createClient();
+  if (!z.uuid().safeParse(visitId).success) return { error: "Invalid visit." };
+  const [user, supabase] = await Promise.all([getCurrentUser(), createClient()]);
+  const isAdmin = user.role === "admin";
+
   const { data: visit } = await supabase
     .from("visits")
     .select("status")
     .eq("id", visitId)
     .maybeSingle();
-  if (visit?.status !== "draft") return { error: "Only draft visits can be deleted." };
+  if (!visit) return { error: "Visit not found." };
+  if (visit.status !== "draft" && !isAdmin) {
+    return { error: "Only admins can delete submitted visits." };
+  }
 
-  // Remove photo files first: storage only allows it while the draft exists.
   const { data: photos } = await supabase
     .from("photos")
     .select("storage_path")
     .eq("visit_id", visitId);
-  await removeFiles(supabase, (photos ?? []).map((p) => p.storage_path));
+  const paths = (photos ?? []).map((p) => p.storage_path);
 
-  const { data, error } = await supabase
-    .from("visits")
-    .delete()
-    .eq("id", visitId)
-    .eq("status", "draft")
-    .select("id");
+  // Inspectors: storage only lets them remove files while the draft
+  // exists, so files go first. Admins: delete the visit first, so a refused
+  // delete never leaves a visit with missing photos.
+  if (!isAdmin) await removeFiles(supabase, paths);
+
+  const { data, error } = await supabase.from("visits").delete().eq("id", visitId).select("id");
   if (error) return fail("delete", error.message);
-  if (data.length === 0) return { error: "Only draft visits can be deleted." };
+  if (data.length === 0) {
+    return { error: isAdmin ? "Could not delete this visit." : "Only draft visits can be deleted." };
+  }
+
+  if (isAdmin) await removeFiles(supabase, paths);
   redirect("/visits");
 }
 
