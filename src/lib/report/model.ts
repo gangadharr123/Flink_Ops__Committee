@@ -100,6 +100,19 @@ function lines(text: string | null) {
     .filter(Boolean);
 }
 
+// "Fridge / freezer equipment" -> "Fridge / Freezer Equipment", as headings
+// in the sample report. Short joining words and "AC" stay as they are.
+export function titleCase(text: string) {
+  return text
+    .split(" ")
+    .map((word, i) =>
+      i > 0 && ["and", "of", "or", "the"].includes(word)
+        ? word
+        : word.charAt(0).toUpperCase() + word.slice(1),
+    )
+    .join(" ");
+}
+
 // [1,2,3,5,7,8] -> "1-3, 5, 7-8"
 export function formatRanges(numbers: number[]) {
   const sorted = [...numbers].sort((a, b) => a - b);
@@ -126,8 +139,9 @@ function stockSection(input: ReportInput): Section {
   };
 }
 
-// Shelves grouped by zone. Neighbouring shelves (1, 2, 3...) with the same
-// condition, score and comment are merged into one line: "Shelves 1-8: ...".
+// Shelves grouped by zone. Within a zone, shelves with the same condition,
+// score and comment share one line, with ranges merged:
+// "Shelves 10-13, 33-35, 37: mould." Lines are ordered by their first shelf.
 function shelfSection(input: ReportInput): Section {
   const checked = input.shelves.filter((s) => s.condition !== null);
   const blocks: Block[] = [];
@@ -148,11 +162,15 @@ function shelfSection(input: ReportInput): Section {
     if (inZone.length === 0) continue;
     blocks.push({ kind: "label", text: `${label}:`, emphasis: "bold" });
 
-    let run: typeof inZone = [];
-    const flush = () => {
-      if (run.length === 0) return;
-      const first = run[0];
-      const numbers = run.map((s) => s.number);
+    // Group by finding; Map keeps the order of each finding's first shelf.
+    const groups = new Map<string, typeof inZone>();
+    for (const shelf of inZone) {
+      const finding = JSON.stringify([shelf.condition, shelf.score, (shelf.comment ?? "").trim()]);
+      groups.set(finding, [...(groups.get(finding) ?? []), shelf]);
+    }
+    for (const group of groups.values()) {
+      const first = group[0];
+      const numbers = group.map((s) => s.number);
       const name = numbers.length === 1 ? `Shelf ${numbers[0]}` : `Shelves ${formatRanges(numbers)}`;
       let text = `${name}: ${conditionText(first.condition!)}`;
       if (first.score !== null) text += `, ${first.score}/5`;
@@ -161,20 +179,7 @@ function shelfSection(input: ReportInput): Section {
       const emphasis: Emphasis =
         first.condition === "mould" ? "urgent" : first.condition === "damaged" ? "bold" : "normal";
       blocks.push(bullet(text, emphasis));
-      run = [];
-    };
-    for (const shelf of inZone) {
-      const prev = run[run.length - 1];
-      const sameAsPrev =
-        prev &&
-        shelf.number === prev.number + 1 &&
-        shelf.condition === prev.condition &&
-        shelf.score === prev.score &&
-        (shelf.comment ?? "").trim() === (prev.comment ?? "").trim();
-      if (!sameAsPrev) flush();
-      run.push(shelf);
     }
-    flush();
   }
 
   const unchecked = input.shelves.filter((s) => s.condition === null).map((s) => s.number);
@@ -235,7 +240,7 @@ function issueSections(issues: ReportIssue[]): Section[] {
       }
       const photos = list.flatMap((i) => i.photos);
       if (photos.length > 0) blocks.push({ kind: "photos", photos });
-      return { title: CATEGORY_LABELS[category], blocks };
+      return { title: titleCase(CATEGORY_LABELS[category]), blocks };
     });
 }
 

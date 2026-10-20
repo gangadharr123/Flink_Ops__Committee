@@ -95,8 +95,8 @@ describe("buildReport", () => {
       "1. Stock and Space Utilisation",
       "2. Shelf Conditions",
       "3. Floor",
-      "4. AC leaks",
-      "5. Water filter",
+      "4. AC Leaks",
+      "5. Water Filter",
       "6. Staff Feedback",
       "7. Overall Impression",
       "8. Priority Actions",
@@ -118,6 +118,23 @@ describe("buildReport", () => {
     });
     expect(shelves).toContainEqual({ kind: "bullet", text: "Shelf 9: clean.", emphasis: "normal" });
     expect(shelves).toContainEqual({ kind: "bullet", text: "Shelf 12.", emphasis: "normal" });
+    // Same finding, not neighbours: still one line.
+    const spread = buildReport(
+      input({
+        shelves: [1, 2, 5, 9].map((n) => ({
+          number: n,
+          zone: "fridge" as const,
+          condition: "mould" as const,
+          score: null,
+          comment: null,
+        })),
+      }),
+    );
+    expect(section(spread.blocks, "Shelf Conditions")).toContainEqual({
+      kind: "bullet",
+      text: "Shelves 1-2, 5, 9: mould.",
+      emphasis: "urgent",
+    });
     // Fridges come before ambient.
     const labels = shelves.filter((b) => b.kind === "label").map((b) => b.kind === "label" && b.text);
     expect(labels).toEqual(["Fridges:", "Ambient:", "Not checked:"]);
@@ -129,7 +146,7 @@ describe("buildReport", () => {
       text: "Hole in floor: New on this visit. Racks tip over.",
       emphasis: "urgent",
     });
-    expect(section(report.blocks, "Water filter")).toContainEqual({
+    expect(section(report.blocks, "Water Filter")).toContainEqual({
       kind: "bullet",
       text: "Water filter broken: Still open. (recurring, seen on 3 visits)",
       emphasis: "normal",

@@ -3,7 +3,11 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   resolve: {
-    // Same "@/..." shortcut as tsconfig.json, so tests can import app code.
-    alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
+    alias: {
+      // Same "@/..." shortcut as tsconfig.json, so tests can import app code.
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      // "server-only" throws outside Next.js on purpose; tests use a stub.
+      "server-only": fileURLToPath(new URL("./tests/server-only-stub.ts", import.meta.url)),
+    },
   },
 });
