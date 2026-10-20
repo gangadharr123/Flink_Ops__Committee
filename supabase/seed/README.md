@@ -9,10 +9,26 @@ Built from your visit reports, the Darmstadt 15 Oct spreadsheet and your 7 Oct M
 
 ## Check these before importing
 
-**Dates and order (marked `"date_is_placeholder": true`):**
-- Darmstadt Visit 1: placeholder 2026-09-18. Real date is before 25 Sep.
-- Mainz trial shift: placeholder 2026-09-04.
-- Mainz "Visit 2" report (1 ops associate, 2 riders, Pfand bottles, rain pants): placeholder 2026-09-11. Check whether it was before or after 25 Sep, and fix the visit numbers if needed.
+**Dates and order** (status as of 20 Oct 2026):
+
+Confirmed (`"date_is_placeholder": false`):
+- D2, Darmstadt Visit 2: 2026-10-01
+- D3, Darmstadt Visit 3: 2026-10-15
+- M3, Mainz Visit 3: 2026-09-25
+- M4, Mainz Visit 4: 2026-10-07 (from the handwritten notes)
+
+Still placeholders (`"date_is_placeholder": true`, real dates unknown):
+- D1, Darmstadt Visit 1: placeholder 2026-09-18. Known: before 25 Sep, because the Mainz 25 Sep report mentions "the Darmstadt visit".
+- M1, Mainz trial shift: placeholder 2026-09-04. Known: the first Mainz visit (4 ops associates and 3 riders interviewed).
+- M2, Mainz "Visit 2" report (1 ops associate, 2 riders; Pfand bottles, rain pants, inbound food safety): placeholder 2026-09-11. **Not known whether it was before or after 25 Sep.** The file assumes before (M2 is number 2, M3 is number 3).
+
+If M2 turns out to be after 25 Sep, before importing:
+- renumber M3 to 2 and M2 to 3, and swap their labels ("Visit 2" / "Visit 3")
+- set M2's date (or a placeholder between 25 Sep and 7 Oct, e.g. 2026-10-01)
+- in M-helmet-hygiene, M-bike-maintenance and M-restocking, the M3 update becomes "new" and the M2 update "still_open" (none of these updates has a note)
+- run `npm run import:visits -- --check supabase/seed/past_visits.json`; it reports visit numbers that don't follow date order
+
+Fix dates and numbers before importing if you can: imported visits are submitted (read-only in the app), so later corrections need an admin and SQL.
 
 **Darmstadt shelf zones (`zone_confidence` = `check` in shelves.csv):**
 - Shelf 9, 14, 15: your Visit 2 notes called 9-15 freezers, but Visit 1 called 14 and 15 fridges and Visit 3 marks 10-13 as fridges.
