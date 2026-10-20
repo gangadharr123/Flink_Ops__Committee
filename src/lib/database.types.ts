@@ -13,6 +13,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      airtable_answers: {
+        Row: {
+          answers: Json
+          updated_at: string
+          updated_by: string | null
+          visit_id: string
+        }
+        Insert: {
+          answers?: Json
+          updated_at?: string
+          updated_by?: string | null
+          visit_id: string
+        }
+        Update: {
+          answers?: Json
+          updated_at?: string
+          updated_by?: string | null
+          visit_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "airtable_answers_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "airtable_answers_visit_id_fkey"
+            columns: ["visit_id"]
+            isOneToOne: true
+            referencedRelation: "visits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hubs: {
         Row: {
           created_at: string

@@ -3,11 +3,20 @@ import { getStats } from "@/lib/issues-data";
 import { createClient } from "@/lib/supabase/server";
 import type { ReportInput } from "./model";
 
-// Gathers everything the report needs for one visit, as the logged-in user
-// (row-level security applies). Also downloads the photos of issues that
-// are not excluded, for embedding in the .docx.
-export async function loadReportData(visitId: string): Promise<
-  | { status: "ok"; input: ReportInput; images: Map<string, Buffer> }
+// Gathers everything the report (and the Airtable answers) need for one
+// visit, as the logged-in user (row-level security applies).
+//   allowDraft: the report needs a submitted visit; Airtable answers don't
+//   withImages: download photos of issues that aren't excluded (for .docx)
+export async function loadReportData(
+  visitId: string,
+  { allowDraft = false, withImages = true } = {},
+): Promise<
+  | {
+      status: "ok";
+      input: ReportInput;
+      images: Map<string, Buffer>;
+      visit: { id: string; hubId: string; visitNumber: number; status: "draft" | "submitted" };
+    }
   | { status: "not-found" | "not-submitted" }
 > {
   const supabase = await createClient();
@@ -24,7 +33,7 @@ export async function loadReportData(visitId: string): Promise<
     .maybeSingle();
   if (error) throw error;
   if (!visit) return { status: "not-found" };
-  if (visit.status !== "submitted") return { status: "not-submitted" };
+  if (visit.status !== "submitted" && !allowDraft) return { status: "not-submitted" };
 
   const [shelves, checks, updates, staff, photos] = await Promise.all([
     supabase.from("shelves").select("id, number, zone").eq("hub_id", visit.hub_id),
@@ -41,7 +50,7 @@ export async function loadReportData(visitId: string): Promise<
       .eq("visit_id", visit.id),
     supabase
       .from("staff_feedback")
-      .select("staff_role, returning, tenure_note, points")
+      .select("staff_role, returning, tenure_note, points, topics")
       .eq("visit_id", visit.id)
       .order("created_at"),
     supabase
@@ -56,7 +65,18 @@ export async function loadReportData(visitId: string): Promise<
   }
 
   const issueRows = (updates.data ?? []).filter((u) => u.issue);
-  const stats = await getStats(issueRows.map((u) => u.issue!.id));
+  const issueIds = issueRows.map((u) => u.issue!.id);
+  const [stats, history] = await Promise.all([
+    getStats(issueIds),
+    // every update on these issues, for "first recorded on Visit 1 (...)"
+    issueIds.length
+      ? supabase
+          .from("issue_updates")
+          .select("issue_id, state, visit:visits (label, visit_number, visit_date)")
+          .in("issue_id", issueIds)
+      : Promise.resolve({ data: [], error: null }),
+  ]);
+  if (history.error) throw history.error;
   const checkByShelf = new Map((checks.data ?? []).map((c) => [c.shelf_id, c]));
 
   const issues: ReportInput["issues"] = issueRows.map((u) => {
@@ -74,11 +94,21 @@ export async function loadReportData(visitId: string): Promise<
       photos: (photos.data ?? [])
         .filter((p) => p.issue_id === issue.id)
         .map((p) => ({ path: p.storage_path, caption: p.caption })),
+      history: (history.data ?? [])
+        .filter((h) => h.issue_id === issue.id && h.visit)
+        .map((h) => ({
+          visitLabel: h.visit!.label ?? `Visit ${h.visit!.visit_number}`,
+          visitDate: h.visit!.visit_date,
+          state: h.state,
+        }))
+        .sort((a, b) => a.visitDate.localeCompare(b.visitDate)),
     };
   });
 
   // Only download photos that will actually appear.
-  const wanted = issues.filter((i) => !i.excluded).flatMap((i) => i.photos.map((p) => p.path));
+  const wanted = withImages
+    ? issues.filter((i) => !i.excluded).flatMap((i) => i.photos.map((p) => p.path))
+    : [];
   const images = new Map<string, Buffer>();
   await Promise.all(
     wanted.map(async (path) => {
@@ -118,8 +148,19 @@ export async function loadReportData(visitId: string): Promise<
       returning: f.returning,
       tenureNote: f.tenure_note,
       points: f.points,
+      topics: f.topics,
     })),
   };
 
-  return { status: "ok", input, images };
+  return {
+    status: "ok",
+    input,
+    images,
+    visit: {
+      id: visit.id,
+      hubId: visit.hub_id,
+      visitNumber: visit.visit_number,
+      status: visit.status,
+    },
+  };
 }

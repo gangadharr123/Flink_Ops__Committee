@@ -90,6 +90,29 @@ describe("create_visit", () => {
   });
 });
 
+describe("airtable_answers", () => {
+  it("stays editable for inspectors after submit; viewers can read but not write", async () => {
+    await t.asUser(INSPECTOR_ID, async () => {
+      const id = await createVisit(await t.hubId("Mainz"));
+      await t.db.query("update public.visits set status = 'submitted' where id = $1", [id]);
+      const save = await t.db.query(
+        `insert into public.airtable_answers (visit_id, answers) values ($1, '{"topics": "edited"}')`,
+        [id],
+      );
+      expect(save.affectedRows).toBe(1);
+
+      await t.setUser(VIEWER_ID);
+      const read = await t.db.query("select answers from public.airtable_answers where visit_id = $1", [id]);
+      expect(read.rows).toEqual([{ answers: { topics: "edited" } }]);
+      const write = await t.db.query(
+        `update public.airtable_answers set answers = '{}' where visit_id = $1`,
+        [id],
+      );
+      expect(write.affectedRows).toBe(0);
+    });
+  });
+});
+
 describe("submitted visits are read-only for inspectors", () => {
   // Creates a visit with one shelf check, then submits it.
   async function submittedVisit() {

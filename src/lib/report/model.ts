@@ -51,12 +51,15 @@ export type ReportInput = {
     state: IssueUpdateState; // this visit's update
     note: string | null;
     photos: { path: string; caption: string | null }[];
+    // every visit's update on this issue, oldest first (optional)
+    history?: { visitLabel: string; visitDate: string; state: IssueUpdateState }[];
   }[];
   staff: {
     role: StaffRole;
     returning: boolean;
     tenureNote: string | null;
     points: string | null;
+    topics?: string[];
   }[];
 };
 
