@@ -55,13 +55,15 @@ export function IssuePhotos({
     <div className="flex flex-col gap-2">
       <PhotoThumbs photos={photos} alt={alt} onDelete={readOnly ? undefined : remove} />
       {!readOnly && (
-        <PhotoPicker
-          onPicked={add}
-          disabled={!online}
-          label={
-            !online ? "Photos need a connection" : photos.length ? "Add another photo" : "Add photo"
-          }
-        />
+        <div className="print:hidden">
+          <PhotoPicker
+            onPicked={add}
+            disabled={!online}
+            label={
+              !online ? "Photos need a connection" : photos.length ? "Add another photo" : "Add photo"
+            }
+          />
+        </div>
       )}
       {error && (
         <p className="text-sm text-destructive" role="alert">

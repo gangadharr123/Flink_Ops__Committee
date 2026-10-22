@@ -1,10 +1,12 @@
 "use client";
 
+import { StateDot, type Tone } from "@/components/state";
 import { cn } from "@/lib/utils";
 
-// A row of big tap-friendly buttons where one can be selected
-// (used for condition, staff role, manager present, yes/no).
-// Tapping the selected chip again clears it when allowClear is set.
+// A row of tap-friendly options where one can be selected (condition,
+// staff role, manager present, yes/no...). The selected chip gets a dark
+// border and bold text, plus a small coloured dot when the value is a state
+// (tone). Tapping the selected chip again clears it when allowClear is set.
 export function ChoiceChips<T extends string>({
   options,
   value,
@@ -13,7 +15,7 @@ export function ChoiceChips<T extends string>({
   allowClear = false,
   label,
   className,
-  selectedClassName,
+  tone,
 }: {
   options: { value: T; label: string }[];
   value: T | null;
@@ -22,11 +24,10 @@ export function ChoiceChips<T extends string>({
   allowClear?: boolean;
   label: string;
   className?: string;
-  // per-value colour for the selected state, e.g. red for mould
-  selectedClassName?: (value: T) => string;
+  tone?: (value: T) => Tone;
 }) {
   return (
-    <div role="group" aria-label={label} className={cn("grid gap-1.5", className)}>
+    <div role="group" aria-label={label} className={cn("grid gap-2", className)}>
       {options.map((option) => {
         const selected = value === option.value;
         return (
@@ -37,14 +38,14 @@ export function ChoiceChips<T extends string>({
             disabled={disabled}
             onClick={() => onChange(selected && allowClear ? null : option.value)}
             className={cn(
-              "flex min-h-11 items-center justify-center rounded-lg border px-1 text-center text-xs leading-tight font-medium transition-colors disabled:cursor-default sm:text-sm",
+              "flex min-h-11 items-center justify-center gap-1 rounded-lg border px-2 text-center text-sm leading-tight transition-colors disabled:cursor-default",
               selected
-                ? (selectedClassName?.(option.value) ??
-                    "border-primary bg-primary text-primary-foreground")
-                : "bg-background enabled:hover:bg-muted",
+                ? "border-foreground font-medium text-foreground"
+                : "text-muted-foreground enabled:hover:bg-muted enabled:hover:text-foreground",
               disabled && !selected && "opacity-60",
             )}
           >
+            {selected && tone && <StateDot tone={tone(option.value)} />}
             {option.label}
           </button>
         );

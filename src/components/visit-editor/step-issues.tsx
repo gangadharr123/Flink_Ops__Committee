@@ -4,7 +4,9 @@ import { memo, useState, useTransition } from "react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { Plus, Trash2 } from "lucide-react";
 import { deleteIssue } from "@/app/(app)/visits/actions";
+import { EmptyState } from "@/components/empty-state";
 import { ExcludedBadge, RecurringBadge, SeverityBadge } from "@/components/issues/issue-badges";
+import { openTone, type Tone } from "@/components/state";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { formatDate } from "@/lib/format";
@@ -26,12 +28,8 @@ const CHOICES: { value: IssueUpdateChoice; label: string }[] = [
   { value: "resolved", label: "Resolved" },
 ];
 
-const choiceClass = (v: IssueUpdateChoice) =>
-  v === "resolved"
-    ? "border-emerald-600 bg-emerald-600 text-white"
-    : v === "improved"
-      ? "border-sky-600 bg-sky-600 text-white"
-      : "border-amber-600 bg-amber-600 text-white";
+// Still open and improved are still open (amber); resolved is grey.
+const choiceTone = (v: IssueUpdateChoice): Tone => openTone(v !== "resolved");
 
 const stateLabel = (s: string) => UPDATE_STATES.find((x) => x.value === s)?.label ?? s;
 
@@ -59,9 +57,9 @@ export function StepIssues({
 
   return (
     <section className="flex flex-col gap-6">
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4">
         <div className="flex items-baseline justify-between gap-2">
-          <h2 className="text-lg font-semibold">Open issues at {hubName}</h2>
+          <h2 className="font-semibold">Open issues at {hubName}</h2>
           {openIssues.length > 0 && (
             <span className="text-sm text-muted-foreground">
               {updated} of {openIssues.length} updated
@@ -69,11 +67,9 @@ export function StepIssues({
           )}
         </div>
         {openIssues.length === 0 ? (
-          <p className="rounded-xl border border-dashed p-6 text-center text-muted-foreground">
-            No open issues from earlier visits.
-          </p>
+          <EmptyState>No open issues from earlier visits.</EmptyState>
         ) : (
-          <div className="grid gap-3 lg:grid-cols-2">
+          <div className="grid gap-4 lg:grid-cols-2">
             {openIssues.map((issue) => (
               <OpenIssueCard
                 key={issue.id}
@@ -86,12 +82,14 @@ export function StepIssues({
         )}
       </div>
 
-      <div className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">New this visit</h2>
+      <div className="flex flex-col gap-4">
+        <h2 className="font-semibold">New this visit</h2>
         {newIssues.length === 0 && (
-          <p className="text-sm text-muted-foreground">No new issues yet.</p>
+          <p className="text-sm text-muted-foreground">
+            {readOnly ? "No new issues on this visit." : "No new issues yet. Add one below."}
+          </p>
         )}
-        <div className="grid gap-3 lg:grid-cols-2">
+        <div className="grid gap-4 lg:grid-cols-2">
           {newIssues.map((issue) => (
             <NewIssueCard
               key={issue.id}
@@ -109,7 +107,7 @@ export function StepIssues({
             onClick={() => setDrawerOpen(true)}
             disabled={!online}
             title={online ? undefined : "Needs a connection"}
-            className="h-12 text-base sm:self-start"
+            className="h-12 text-base sm:self-start print:hidden"
           >
             <Plus /> Add new issue
           </Button>
@@ -130,14 +128,23 @@ export function StepIssues({
 
 function IssueHeading({ issue }: { issue: EditorIssue | NewIssue }) {
   return (
-    <header className="flex flex-col gap-1.5">
-      <h3 className="font-semibold leading-snug">{issue.title}</h3>
-      <div className="flex flex-wrap items-center gap-1.5">
+    <header className="flex flex-col gap-1">
+      <h3 className="font-medium leading-snug">{issue.title}</h3>
+      {/* "● Immediate · Floor · recurring, seen on 3 visits" */}
+      <p className="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground">
         <SeverityBadge severity={issue.severity} />
-        <span className="text-xs text-muted-foreground">{CATEGORY_LABELS[issue.category]}</span>
-        {issue.isRecurring && <RecurringBadge visits={issue.visitsSeen} />}
-        {issue.excluded && <ExcludedBadge />}
-      </div>
+        <span>· {CATEGORY_LABELS[issue.category]}</span>
+        {issue.isRecurring && (
+          <span>
+            · <RecurringBadge visits={issue.visitsSeen} />
+          </span>
+        )}
+        {issue.excluded && (
+          <span>
+            · <ExcludedBadge />
+          </span>
+        )}
+      </p>
     </header>
   );
 }
@@ -157,10 +164,10 @@ const OpenIssueCard = memo(function OpenIssueCard({
   const noteWithoutState = value.state === null && value.note.trim() !== "";
 
   return (
-    <article className="flex flex-col gap-3 rounded-xl border bg-card p-3">
+    <article className="flex flex-col gap-4 rounded-lg border p-4">
       <IssueHeading issue={issue} />
       {issue.last && (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           Last: {stateLabel(issue.last.state)} on {issue.last.label ?? "visit"} (
           {formatDate(issue.last.date)})
           {issue.last.note && ` · ${issue.last.note}`}
@@ -178,7 +185,7 @@ const OpenIssueCard = memo(function OpenIssueCard({
             allowClear
             disabled={readOnly}
             className="grid-cols-3"
-            selectedClassName={choiceClass}
+            tone={choiceTone}
           />
         )}
       />
@@ -192,7 +199,7 @@ const OpenIssueCard = memo(function OpenIssueCard({
         />
       )}
       {noteWithoutState && (
-        <p className="text-xs text-destructive">Pick a state to save the note.</p>
+        <p className="text-sm text-destructive">Pick a state to save the note.</p>
       )}
       <IssuePhotos
         visitId={visitId}
@@ -230,7 +237,7 @@ function NewIssueCard({
   }
 
   return (
-    <article className="flex flex-col gap-3 rounded-xl border border-primary/40 bg-primary/5 p-3">
+    <article className="flex flex-col gap-4 rounded-lg border p-4">
       <IssueHeading issue={issue} />
       {issue.description && <p className="text-sm whitespace-pre-line">{issue.description}</p>}
       <IssuePhotos
@@ -242,7 +249,7 @@ function NewIssueCard({
       />
       {error && <p className="text-sm text-destructive">{error}</p>}
       {!readOnly && (
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-2 print:hidden">
           {confirm ? (
             <>
               <Button type="button" variant="ghost" onClick={() => setConfirm(false)} className="h-10">

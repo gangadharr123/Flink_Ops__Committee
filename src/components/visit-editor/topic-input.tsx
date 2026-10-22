@@ -38,17 +38,17 @@ export function TopicInput({
   return (
     <div className="flex flex-col gap-2">
       {value.length > 0 && (
-        <ul className="flex flex-wrap gap-1.5">
+        <ul className="flex flex-wrap gap-2">
           {value.map((tag) => (
             <li key={tag}>
-              <span className="inline-flex h-9 items-center gap-1 rounded-full bg-primary pr-1 pl-3 text-sm text-primary-foreground">
+              <span className="inline-flex h-9 items-center gap-1 rounded-full border border-foreground pr-1 pl-4 text-sm font-medium">
                 {show(tag)}
                 {!disabled && (
                   <button
                     type="button"
                     onClick={() => onChange(value.filter((t) => t !== tag))}
                     aria-label={`Remove ${show(tag)}`}
-                    className="flex size-7 items-center justify-center rounded-full hover:bg-primary-foreground/20"
+                    className="flex size-8 items-center justify-center rounded-full hover:bg-muted print:hidden"
                   >
                     <X className="size-3.5" />
                   </button>
@@ -61,7 +61,7 @@ export function TopicInput({
 
       {!disabled && (
         <>
-          <div className="flex gap-2">
+          <div className="flex gap-2 print:hidden">
             <Input
               value={text}
               onChange={(e) => setText(e.target.value)}
@@ -89,13 +89,13 @@ export function TopicInput({
             </Button>
           </div>
           {matching.length > 0 && (
-            <ul className="flex flex-wrap gap-1.5" aria-label="Suggested topics">
+            <ul className="flex flex-wrap gap-2 print:hidden" aria-label="Suggested topics">
               {matching.map((tag) => (
                 <li key={tag}>
                   <button
                     type="button"
                     onClick={() => add(tag)}
-                    className="inline-flex h-9 items-center rounded-full border px-3 text-sm hover:bg-muted"
+                    className="inline-flex h-9 items-center rounded-full border px-4 text-sm text-muted-foreground hover:bg-muted"
                   >
                     + {show(tag)}
                   </button>

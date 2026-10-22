@@ -92,7 +92,7 @@ export function StepSummary({
         />
       </div>
 
-      <dl className="grid grid-cols-2 gap-3 rounded-xl border p-4 text-sm sm:grid-cols-3">
+      <dl className="grid grid-cols-2 gap-4 rounded-lg border p-4 sm:grid-cols-3">
         <Stat label="Shelves checked" value={`${counts.checked} / ${shelves.length}`} />
         <Stat label="Mould" value={counts.mould} alert={counts.mould > 0} />
         <Stat label="Changed" value={counts.changed} />
@@ -108,7 +108,7 @@ export function StepSummary({
         <DeleteVisitButton
           visit={deletable}
           label="Delete draft"
-          className="h-12 self-start text-base"
+          className="h-12 self-start text-base print:hidden"
         />
       )}
     </section>
@@ -126,10 +126,8 @@ function Stat({
 }) {
   return (
     <div>
-      <dt className="text-muted-foreground">{label}</dt>
-      <dd className={alert ? "text-lg font-semibold text-destructive" : "text-lg font-semibold"}>
-        {value}
-      </dd>
+      <dt className="text-sm text-muted-foreground">{label}</dt>
+      <dd className={alert ? "font-semibold text-state-critical" : "font-semibold"}>{value}</dd>
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Controller, useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import { ShieldAlert, Trash2, UserPlus } from "lucide-react";
+import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -51,21 +52,18 @@ export function StepStaff({
 
   return (
     <section className="flex flex-col gap-4">
-      <p
-        role="note"
-        className="flex items-start gap-2 rounded-xl border border-amber-500/50 bg-amber-500/10 p-3 text-sm font-medium text-amber-900 dark:text-amber-200"
-      >
-        <ShieldAlert className="mt-0.5 size-5 shrink-0" />
-        No names, nothing private. Describe people by role and tenure only.
+      <p role="note" className="flex items-start gap-2 text-sm">
+        <ShieldAlert className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+        No names, nothing private. Role and tenure only.
       </p>
 
       {fields.length === 0 && (
-        <p className="rounded-xl border border-dashed p-6 text-center text-muted-foreground">
-          No staff feedback yet.
-        </p>
+        <EmptyState>
+          {readOnly ? "No staff feedback on this visit." : "No staff feedback yet. Add a card for each person you speak to."}
+        </EmptyState>
       )}
 
-      <div className="grid gap-3 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-2">
         {fields.map((field, index) => (
           <StaffCard
             key={field.fieldKey}
@@ -82,7 +80,7 @@ export function StepStaff({
           type="button"
           variant="outline"
           onClick={addPerson}
-          className="h-12 self-stretch text-base sm:self-start"
+          className="h-12 self-stretch text-base sm:self-start print:hidden"
         >
           <UserPlus /> Add person
         </Button>
@@ -108,12 +106,12 @@ function StaffCard({
   const idPrefix = `staff-${index}`;
 
   return (
-    <article className="flex flex-col gap-4 rounded-xl border bg-card p-4">
+    <article className="flex flex-col gap-4 rounded-lg border p-4">
       <header className="flex items-center justify-between gap-2">
         <h3 className="font-semibold">Person {index + 1}</h3>
         {!readOnly &&
           (confirmRemove ? (
-            <div className="flex gap-2">
+            <div className="flex gap-2 print:hidden">
               <Button
                 type="button"
                 variant="ghost"
@@ -138,7 +136,7 @@ function StaffCard({
               size="icon"
               onClick={() => setConfirmRemove(true)}
               aria-label={`Remove person ${index + 1}`}
-              className="size-10"
+              className="size-10 print:hidden"
             >
               <Trash2 />
             </Button>
@@ -162,7 +160,7 @@ function StaffCard({
           )}
         />
         {role === null && !readOnly && (
-          <p className="text-xs text-destructive">Pick a role to save this card.</p>
+          <p className="text-sm text-destructive">Pick a role to save this card.</p>
         )}
       </div>
 

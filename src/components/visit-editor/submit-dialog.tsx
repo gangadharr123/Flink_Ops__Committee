@@ -53,7 +53,7 @@ export function SubmitDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         {(counts.unchecked > 0 || counts.staffWithoutRole > 0 || counts.issuesNotUpdated > 0) && (
-          <ul className="list-disc rounded-lg bg-amber-500/10 py-2 pr-3 pl-7 text-sm text-amber-800 dark:text-amber-300">
+          <ul className="flex list-disc flex-col gap-2 pl-6 text-sm marker:text-state-warning">
             {counts.unchecked > 0 && (
               <li>
                 {counts.unchecked} of {shelves.length} shelves are not checked.

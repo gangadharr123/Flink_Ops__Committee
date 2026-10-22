@@ -6,7 +6,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import Link from "next/link";
 import { ClipboardCopy, CloudOff, FileDown, X } from "lucide-react";
 import { submitVisit } from "@/app/(app)/visits/actions";
-import { Badge } from "@/components/ui/badge";
+import { openTone, StateDot, StateLabel } from "@/components/state";
 import { buttonVariants } from "@/components/ui/button";
 import { formatDate } from "@/lib/format";
 import { useOnline } from "@/lib/use-online";
@@ -114,7 +114,7 @@ export function VisitEditor({
             onClick={leave}
             disabled={leaving}
             aria-label="Close visit"
-            className="-ml-2 flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-muted"
+            className="-ml-2 flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-muted print:hidden"
           >
             <X className="size-5" />
           </button>
@@ -122,13 +122,14 @@ export function VisitEditor({
             <h1 className="truncate text-xl font-semibold">
               {visit.hubName} · {visit.label}
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground">
               {formatDate(visit.visitDate)}
+              <span>·</span>
+              <StateLabel tone={openTone(visit.status === "draft")}>
+                {visit.status === "draft" ? "Draft" : "Submitted"}
+              </StateLabel>
             </p>
           </div>
-          <Badge variant={visit.status === "draft" ? "outline" : "secondary"}>
-            {visit.status === "draft" ? "Draft" : "Submitted"}
-          </Badge>
           {visit.status === "draft" && (
             // Drafts: Airtable answers are available too, saved first.
             <button
@@ -141,39 +142,39 @@ export function VisitEditor({
               }
               aria-label="Airtable answers"
               title="Airtable answers"
-              className="-mr-2 flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-muted"
+              className="-mr-2 flex size-11 shrink-0 items-center justify-center rounded-full hover:bg-muted print:hidden"
             >
               <ClipboardCopy className="size-5" />
             </button>
           )}
         </header>
 
-        <StepProgress current={step} onSelect={goTo} />
+        <div className="print:hidden">
+          <StepProgress current={step} onSelect={goTo} />
+        </div>
 
         {!online && !readOnly && (
-          <p
-            role="status"
-            className="flex items-start gap-2 rounded-lg border border-amber-500/50 bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-200"
-          >
-            <CloudOff className="mt-0.5 size-4 shrink-0" />
+          <p role="status" className="flex items-start gap-2 text-sm print:hidden">
+            <CloudOff className="mt-0.5 size-4 shrink-0 text-state-warning" />
             You&apos;re offline. Changes are kept on this phone and sync when you&apos;re back
             online. Adding issues or photos, submitting and deleting need a connection.
           </p>
         )}
         {restored && (
-          <p className="rounded-lg bg-muted p-3 text-sm" role="status">
+          <p className="flex items-center gap-2 text-sm print:hidden" role="status">
+            <StateDot tone="neutral" />
             Restored changes from this device that were not saved yet.
           </p>
         )}
         {readOnly && (
-          <div className="flex flex-col gap-3 rounded-lg bg-muted p-3 text-sm sm:flex-row sm:items-center sm:justify-between">
-            <p>
+          <div className="flex flex-col gap-4 rounded-lg border p-4 text-sm sm:flex-row sm:items-center sm:justify-between print:border-0 print:p-0">
+            <p className="text-muted-foreground">
               {visit.status === "submitted"
                 ? `Submitted${visit.submittedAt ? ` on ${formatDate(visit.submittedAt.slice(0, 10))}` : ""}. This visit is read-only.`
                 : "Read-only: your role can't edit visits."}
             </p>
             {visit.status === "submitted" && (
-              <div className="flex flex-col gap-2 sm:flex-row">
+              <div className="flex flex-col gap-2 sm:flex-row print:hidden">
                 {/* A plain link (not next/link): the browser downloads the file. */}
                 <a
                   href={`/visits/${visit.id}/report`}
@@ -201,8 +202,11 @@ export function VisitEditor({
           </div>
         )}
 
-        {step === "shelves" && <StepShelves shelves={data.shelves} readOnly={readOnly} />}
-        {step === "issues" && (
+        {/* One step on screen; all four when printing (Save as PDF). */}
+        <StepSection title="Shelves" active={step === "shelves"}>
+          <StepShelves shelves={data.shelves} readOnly={readOnly} />
+        </StepSection>
+        <StepSection title="Issues" active={step === "issues"}>
           <StepIssues
             visitId={visit.id}
             hubName={visit.hubName}
@@ -211,11 +215,11 @@ export function VisitEditor({
             onNewIssuesChange={setNewIssues}
             readOnly={readOnly}
           />
-        )}
-        {step === "staff" && (
+        </StepSection>
+        <StepSection title="Staff feedback" active={step === "staff"}>
           <StepStaff suggestions={data.topicSuggestions} readOnly={readOnly} />
-        )}
-        {step === "summary" && (
+        </StepSection>
+        <StepSection title="Summary" active={step === "summary"}>
           <StepSummary
             shelves={data.shelves}
             openIssues={data.openIssues}
@@ -223,7 +227,7 @@ export function VisitEditor({
             readOnly={readOnly}
             deletable={canEdit && visit.status === "draft" ? visit : null}
           />
-        )}
+        </StepSection>
       </div>
 
       <ActionBar
@@ -244,5 +248,23 @@ export function VisitEditor({
         onConfirm={submit}
       />
     </FormProvider>
+  );
+}
+
+// A step: shown when active; when printing, every step shows with its title.
+function StepSection({
+  title,
+  active,
+  children,
+}: {
+  title: string;
+  active: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={cn(active ? "block" : "hidden", "print:mt-8 print:block")}>
+      <h2 className="mb-4 hidden text-xl font-semibold print:block">{title}</h2>
+      {children}
+    </div>
   );
 }

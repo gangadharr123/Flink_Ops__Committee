@@ -43,9 +43,9 @@ export function ActionBar({
   const online = useOnline();
   return (
     // Bottom padding: iPhone home indicator + room for the Netlify badge.
-    <div className="fixed inset-x-0 bottom-0 z-20 border-t bg-background/95 pb-[calc(env(safe-area-inset-bottom)+var(--badge-clearance))] backdrop-blur md:left-60">
+    <div className="fixed inset-x-0 bottom-0 z-20 border-t bg-background pb-[calc(env(safe-area-inset-bottom)+var(--badge-clearance))] md:left-60 print:hidden">
       {status === "error" && error && (
-        <p className="border-b bg-destructive/10 px-4 py-1.5 text-center text-xs text-destructive" role="alert">
+        <p className="border-b px-4 py-2 text-center text-sm text-destructive" role="alert">
           {error}
         </p>
       )}
@@ -66,17 +66,17 @@ export function ActionBar({
             onClick={onSave}
             aria-live="polite"
             className={cn(
-              "flex h-12 items-center justify-center gap-1.5 justify-self-center rounded-lg px-2 text-center text-sm leading-tight",
+              "flex h-12 items-center justify-center gap-2 justify-self-center rounded-lg px-2 text-center text-sm leading-tight",
               status === "saved" && "text-muted-foreground",
               status === "unsaved" && "font-medium",
-              status === "local" && "font-medium text-amber-700 dark:text-amber-400",
+              status === "local" && "font-medium",
               (status === "error" || status === "incomplete") && "font-medium text-destructive",
             )}
           >
             {status === "saved" && <Check className="size-4" />}
             {status === "unsaved" && <Save className="size-4" />}
             {status === "saving" && <Loader2 className="size-4 animate-spin" />}
-            {status === "local" && <CloudOff className="size-4" />}
+            {status === "local" && <CloudOff className="size-4 text-state-warning" />}
             {(status === "error" || status === "incomplete") && <AlertCircle className="size-4" />}
             {STATUS_TEXT[status]}
           </button>

@@ -13,25 +13,25 @@ export function StepProgress({
 }) {
   const currentIndex = STEPS.findIndex((s) => s.id === current);
   return (
-    <ol className="grid grid-cols-4 gap-1" aria-label="Visit steps">
+    <ol className="grid grid-cols-4 gap-2" aria-label="Visit steps">
       {STEPS.map((step, i) => (
         <li key={step.id}>
           <button
             type="button"
             onClick={() => onSelect(step.id)}
             aria-current={i === currentIndex ? "step" : undefined}
-            className="flex w-full flex-col items-center gap-1.5 py-1"
+            className="flex min-h-11 w-full flex-col items-center justify-center gap-2"
           >
             <span
               className={cn(
-                "h-1.5 w-full rounded-full",
-                i <= currentIndex ? "bg-primary" : "bg-muted",
+                "h-0.5 w-full rounded-full",
+                i <= currentIndex ? "bg-foreground" : "bg-border",
               )}
             />
             <span
               className={cn(
-                "text-xs",
-                i === currentIndex ? "font-semibold" : "text-muted-foreground",
+                "text-sm",
+                i === currentIndex ? "font-medium" : "text-muted-foreground",
               )}
             >
               {i + 1} {step.label}

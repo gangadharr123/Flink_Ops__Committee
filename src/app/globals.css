@@ -2,7 +2,8 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
+/* Dark mode follows the device setting. */
+@custom-variant dark (@media (prefers-color-scheme: dark));
 
 @theme inline {
   --color-background: var(--background);
@@ -10,6 +11,10 @@
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
+  /* State colours (the only colours in the app): bg-state-critical etc. */
+  --color-state-critical: var(--state-critical);
+  --color-state-warning: var(--state-warning);
+  --color-state-neutral: var(--state-neutral);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -72,16 +77,18 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  /* Dashboard colours (checked with the dataviz palette validator).
-     Hubs are categories; severity and shelf condition are states, so they
-     use the fixed status colours and always come with a text label. */
-  --viz-hub-1: #2a78d6;
-  --viz-hub-2: #eb6834;
-  --viz-critical: #d03b3b;
-  --viz-serious: #ec835a;
-  --viz-warning: #fab219;
-  --viz-good: #0ca30c;
-  --viz-neutral: #a3a29d;
+  /* Colour is used only for state, always next to a text label:
+     red = immediate issue or mould, amber = dusty or open, grey otherwise. */
+  --state-critical: #d03b3b;
+  --state-warning: #d97706;
+  --state-neutral: #a3a29d;
+  /* Charts follow the same rule: red and amber for those states, grey
+     shades (dark to light) for everything else, with a legend and table. */
+  --viz-critical: var(--state-critical);
+  --viz-warning: var(--state-warning);
+  --viz-grey-1: #52514e;
+  --viz-grey-2: #8a8984;
+  --viz-grey-3: #c3c2bd;
   /* Empty space kept at the bottom of every bottom bar and the page, so the
      "Powered by Netlify" badge Netlify adds in the bottom-right corner never
      covers a button. Set to 0 if the badge goes away. */
@@ -97,7 +104,8 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-.dark {
+@media (prefers-color-scheme: dark) {
+:root {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -121,17 +129,21 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --viz-hub-1: #3987e5;
-  --viz-hub-2: #d95926;
-  --viz-neutral: #6f6e69;
+  --state-critical: #e66767;
+  --state-warning: #f59e0b;
+  --state-neutral: #6f6e69;
+  --viz-grey-1: #d6d5d0;
+  --viz-grey-2: #9d9c97;
+  --viz-grey-3: #5c5b57;
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.922 0 0);
+  --sidebar-primary-foreground: oklch(0.205 0 0);
   --sidebar-accent: oklch(0.269 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
 }
 
 @layer base {
@@ -143,5 +155,42 @@
   }
   html {
     @apply font-sans;
+    color-scheme: light dark;
+  }
+}
+
+/* Print / Save as PDF: black on white, no app chrome (elements marked
+   print:hidden), sections not split across pages where possible. */
+@media print {
+  @page {
+    margin: 16mm;
+  }
+  :root {
+    --background: #fff;
+    --foreground: #000;
+    --card: #fff;
+    --muted: #fff;
+    --muted-foreground: #444;
+    --border: #ccc;
+    color-scheme: light;
+  }
+  body {
+    background: #fff;
+    color: #000;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  section,
+  article,
+  li,
+  tr {
+    break-inside: avoid;
+  }
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
   }
 }

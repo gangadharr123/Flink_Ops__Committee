@@ -24,7 +24,7 @@ import {
 } from "@/lib/visit-form";
 import type { EditorShelf } from "@/lib/visits";
 import { ChoiceChips } from "./choice-chips";
-import { conditionClass } from "./condition-style";
+import { conditionTone } from "@/components/state";
 
 // Bottom sheet: "1-8 dusty, score 3, comment: dust on upper racks".
 // Empty score or comment leaves what each shelf already has.
@@ -102,7 +102,7 @@ export function BulkSetDrawer({
                 value={condition}
                 onChange={setCondition}
                 className="grid-cols-5"
-                selectedClassName={conditionClass}
+                tone={conditionTone}
               />
             </div>
 

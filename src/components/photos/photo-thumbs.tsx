@@ -42,7 +42,7 @@ export function PhotoThumbs({
               type="button"
               onClick={() => onDelete(photo.id)}
               aria-label="Delete photo"
-              className="absolute -top-2 -right-2 flex size-8 items-center justify-center rounded-full border bg-background shadow-sm hover:bg-muted"
+              className="absolute -top-2 -right-2 flex size-8 items-center justify-center rounded-full border bg-background hover:bg-muted print:hidden"
             >
               <X className="size-4" />
             </button>

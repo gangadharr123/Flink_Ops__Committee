@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { ChevronDown, ListChecks } from "lucide-react";
+import { chipClass } from "@/components/chip-style";
+import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import {
   isShelfChanged,
   shelfKey,
@@ -45,6 +46,9 @@ export function StepShelves({
   const values = useWatch({ control, name: "shelves" });
   const [filter, setFilter] = useState<Filter>("all");
   const [bulkOpen, setBulkOpen] = useState(false);
+  // One shelf open at a time; tapping it again closes it.
+  const [openKey, setOpenKey] = useState<string | null>(null);
+  const toggle = useCallback((key: string) => setOpenKey((k) => (k === key ? null : key)), []);
 
   const counts = Object.fromEntries(
     FILTERS.map((f) => [
@@ -64,25 +68,19 @@ export function StepShelves({
 
   return (
     <section className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2 print:hidden">
         <div role="group" aria-label="Filter shelves" className="flex flex-wrap gap-2">
-          {FILTERS.map((f) => (
+          {/* "Changed" only applies while editing a draft. */}
+          {FILTERS.filter((f) => !(readOnly && f.id === "changed")).map((f) => (
             <button
               key={f.id}
               type="button"
               aria-pressed={filter === f.id}
               onClick={() => setFilter(f.id)}
-              className={cn(
-                "inline-flex h-10 items-center gap-1.5 rounded-full border px-3.5 text-sm font-medium transition-colors",
-                filter === f.id
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "bg-background hover:bg-muted",
-              )}
+              className={chipClass(filter === f.id)}
             >
               {f.label}
-              <span className={cn("text-xs", filter !== f.id && "text-muted-foreground")}>
-                {counts[f.id]}
-              </span>
+              <span className="text-muted-foreground">{counts[f.id]}</span>
             </button>
           ))}
         </div>
@@ -99,9 +97,15 @@ export function StepShelves({
       </div>
 
       {groups.every((g) => g.shown.length === 0) && (
-        <p className="rounded-xl border border-dashed p-6 text-center text-muted-foreground">
+        <EmptyState
+          action={
+            <Button type="button" variant="outline" onClick={() => setFilter("all")} className="h-10">
+              Show all shelves
+            </Button>
+          }
+        >
           No shelves match this filter.
-        </p>
+        </EmptyState>
       )}
 
       {groups.map(
@@ -109,8 +113,8 @@ export function StepShelves({
           group.shown.length > 0 && (
             // <details> is a native collapsible section: no JavaScript needed.
             <details key={group.zone} open className="group/zone">
-              <summary className="sticky top-14 z-[5] -mx-4 flex h-11 cursor-pointer list-none items-center [&::-webkit-details-marker]:hidden gap-2 bg-background/95 px-4 font-semibold backdrop-blur md:top-0">
-                <ChevronDown className="size-4 transition-transform group-[:not([open])]/zone:-rotate-90" />
+              <summary className="sticky top-14 z-[5] -mx-4 flex h-12 cursor-pointer list-none items-center gap-2 bg-background px-4 font-semibold md:top-0 print:static [&::-webkit-details-marker]:hidden">
+                <ChevronDown className="size-4 transition-transform group-[:not([open])]/zone:-rotate-90 print:hidden" />
                 {group.label}
                 <span className="text-sm font-normal text-muted-foreground">
                   {filter === "all"
@@ -118,9 +122,15 @@ export function StepShelves({
                     : `${group.shown.length} of ${group.all.length}`}
                 </span>
               </summary>
-              <div className="grid gap-3 pt-2 md:grid-cols-2 xl:grid-cols-3">
+              <div className="grid items-start gap-2 pt-2 md:grid-cols-2 xl:grid-cols-3">
                 {group.shown.map((shelf) => (
-                  <ShelfCard key={shelf.id} shelf={shelf} readOnly={readOnly} />
+                  <ShelfCard
+                    key={shelf.id}
+                    shelf={shelf}
+                    readOnly={readOnly}
+                    open={openKey === shelfKey(shelf.number)}
+                    onToggle={toggle}
+                  />
                 ))}
               </div>
             </details>

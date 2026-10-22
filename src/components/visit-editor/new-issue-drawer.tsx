@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { X } from "lucide-react";
 import { createIssue } from "@/app/(app)/visits/actions";
 import { PhotoPicker } from "@/components/photos/photo-picker";
+import { severityTone } from "@/components/state";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -26,14 +27,6 @@ import { removeUploadedPhoto, uploadVisitPhoto } from "@/lib/upload-photo";
 import type { NewIssue } from "@/lib/visits";
 import { ChoiceChips } from "./choice-chips";
 
-const severityClass = (s: Severity) =>
-  s === "immediate"
-    ? "border-red-600 bg-red-600 font-bold text-white"
-    : s === "high"
-      ? "border-orange-500 bg-orange-500 text-white"
-      : s === "medium"
-        ? "border-amber-500 bg-amber-500 text-white"
-        : "border-primary bg-primary text-primary-foreground";
 
 // Bottom sheet for a new issue. Saved straight away (not autosaved).
 export function NewIssueDrawer({
@@ -133,7 +126,7 @@ export function NewIssueDrawer({
                 id="issue-category"
                 value={category}
                 onChange={(e) => setCategory(e.target.value as IssueCategory)}
-                className="h-12 rounded-lg border border-input bg-background px-3 text-base"
+                className="h-12 rounded-lg border border-input bg-background px-4 text-base"
               >
                 <option value="" disabled>
                   Choose...
@@ -165,7 +158,7 @@ export function NewIssueDrawer({
                 value={severity}
                 onChange={setSeverity}
                 className="grid-cols-4"
-                selectedClassName={severityClass}
+                tone={severityTone}
               />
             </div>
 
@@ -183,7 +176,7 @@ export function NewIssueDrawer({
             <div className="flex flex-col gap-2">
               <span className="text-sm font-medium">Photo (optional)</span>
               {photo ? (
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-4">
                   {/* eslint-disable-next-line @next/next/no-img-element -- local preview of the compressed photo */}
                   <img
                     src={photo.preview}
