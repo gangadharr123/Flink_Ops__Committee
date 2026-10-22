@@ -8,6 +8,7 @@ import {
   TopTopicsChart,
 } from "@/components/dashboard/charts";
 import { RecurringBadge, SeverityBadge } from "@/components/issues/issue-badges";
+import { EmptyState } from "@/components/empty-state";
 import { loadDashboard } from "@/lib/dashboard/load";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +18,7 @@ export default function DashboardPage() {
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-4">
       <div>
-        <h1 className="text-2xl font-semibold">Dashboard</h1>
+        <h1 className="text-xl font-semibold">Dashboard</h1>
         <p className="text-sm text-muted-foreground">
           Submitted visits only. Issues hidden from reports are not counted.
         </p>
@@ -34,7 +35,7 @@ async function DashboardContent() {
 
   return (
     <>
-      <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <dl className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Kpi label="Open issues" value={d.kpis.open} />
         <Kpi label="Immediate, open" value={d.kpis.immediateOpen} alert={d.kpis.immediateOpen > 0} />
         <Kpi label="Recurring, open" value={d.kpis.recurringOpen} />
@@ -63,12 +64,12 @@ async function DashboardContent() {
           ) : (
             <div className="-mx-4 overflow-x-auto px-4">
               <table className="w-full min-w-[28rem] text-sm">
-                <thead className="text-left text-xs text-muted-foreground">
+                <thead className="text-left text-muted-foreground">
                   <tr>
-                    <th className="py-2 pr-2 font-medium">Issue</th>
-                    <th className="py-2 pr-2 font-medium">Hub</th>
-                    <th className="py-2 pr-2 text-right font-medium">Days open</th>
-                    <th className="py-2 text-right font-medium">Visits seen</th>
+                    <th className="py-2 pr-2 font-normal">Issue</th>
+                    <th className="py-2 pr-2 font-normal">Hub</th>
+                    <th className="py-2 pr-2 text-right font-normal">Days open</th>
+                    <th className="py-2 text-right font-normal">Visits seen</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -78,7 +79,7 @@ async function DashboardContent() {
                         <Link href={`/issues/${issue.id}`} className="font-medium hover:underline">
                           {issue.title}
                         </Link>
-                        <div className="mt-1 flex flex-wrap gap-1">
+                        <div className="mt-1 flex flex-wrap gap-x-2 text-muted-foreground">
                           <SeverityBadge severity={issue.severity} />
                           {issue.isRecurring && <RecurringBadge visits={issue.visitsSeen} />}
                         </div>
@@ -138,9 +139,9 @@ async function DashboardContent() {
 
 function Kpi({ label, value, alert }: { label: string; value: number; alert?: boolean }) {
   return (
-    <div className="rounded-xl border bg-card p-4">
+    <div className="rounded-lg border p-4">
       <dt className="text-sm text-muted-foreground">{label}</dt>
-      <dd className={cn("text-3xl font-semibold tabular-nums", alert && "text-destructive")}>
+      <dd className={cn("text-xl font-semibold tabular-nums", alert && "text-state-critical")}>
         {value}
       </dd>
     </div>
@@ -149,7 +150,7 @@ function Kpi({ label, value, alert }: { label: string; value: number; alert?: bo
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="flex min-w-0 flex-col gap-3 rounded-xl border bg-card p-4">
+    <section className="flex min-w-0 flex-col gap-4 rounded-lg border p-4">
       <h2 className="font-semibold">{title}</h2>
       {children}
     </section>
@@ -157,22 +158,22 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
 }
 
 function Empty({ children }: { children: React.ReactNode }) {
-  return <p className="py-8 text-center text-sm text-muted-foreground">{children}</p>;
+  return <EmptyState className="border-0">{children}</EmptyState>;
 }
 
 // The numbers behind a chart, for anyone who can't read the colours.
 function DataTable({ head, rows }: { head: string[]; rows: (string | number)[][] }) {
   return (
     <details className="text-sm">
-      <summary className="cursor-pointer text-muted-foreground hover:text-foreground">
+      <summary className="cursor-pointer text-muted-foreground hover:text-foreground print:hidden">
         Show as table
       </summary>
       <div className="mt-2 overflow-x-auto">
         <table className="w-full">
-          <thead className="text-left text-xs text-muted-foreground">
+          <thead className="text-left text-muted-foreground">
             <tr>
               {head.map((h, i) => (
-                <th key={h} className={cn("py-1 pr-3 font-medium", i > 0 && "text-right")}>
+                <th key={h} className={cn("py-2 pr-4 font-normal", i > 0 && "text-right")}>
                   {h}
                 </th>
               ))}
@@ -182,7 +183,7 @@ function DataTable({ head, rows }: { head: string[]; rows: (string | number)[][]
             {rows.map((row) => (
               <tr key={String(row[0])} className="border-t">
                 {row.map((cell, i) => (
-                  <td key={i} className={cn("py-1 pr-3", i > 0 && "text-right tabular-nums")}>
+                  <td key={i} className={cn("py-2 pr-4", i > 0 && "text-right tabular-nums")}>
                     {cell}
                   </td>
                 ))}
@@ -198,14 +199,14 @@ function DataTable({ head, rows }: { head: string[]; rows: (string | number)[][]
 function DashboardSkeleton() {
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="h-24 animate-pulse rounded-xl bg-muted" />
+          <div key={i} className="h-24 animate-pulse rounded-lg bg-muted" />
         ))}
       </div>
       <div className="grid gap-4 lg:grid-cols-2">
         {[0, 1, 2, 3].map((i) => (
-          <div key={i} className="h-72 animate-pulse rounded-xl bg-muted" />
+          <div key={i} className="h-72 animate-pulse rounded-lg bg-muted" />
         ))}
       </div>
     </div>

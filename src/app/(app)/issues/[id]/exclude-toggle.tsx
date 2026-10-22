@@ -32,14 +32,16 @@ export function ExcludeToggle({
   }
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-2">
+      {/* Printed as plain text instead of the switch. */}
+      <p className="hidden text-sm print:block">Hidden from reports: {shown ? "yes" : "no"}</p>
       <button
         type="button"
         role="switch"
         aria-checked={shown}
         onClick={toggle}
         disabled={disabled}
-        className="flex min-h-12 w-full items-center justify-between gap-4 rounded-xl border p-3 text-left disabled:opacity-60"
+        className="flex min-h-12 w-full items-center justify-between gap-4 rounded-lg border p-4 text-left disabled:opacity-60 print:hidden"
       >
         <span>
           <span className="block font-medium">Hide from reports</span>
@@ -50,14 +52,14 @@ export function ExcludeToggle({
         <span
           aria-hidden
           className={cn(
-            "flex h-7 w-12 shrink-0 items-center rounded-full p-0.5 transition-colors",
-            shown ? "bg-primary" : "bg-muted-foreground/30",
+            "flex h-7 w-12 shrink-0 items-center rounded-full border p-0.5 transition-colors",
+            shown ? "border-foreground bg-foreground" : "bg-muted",
           )}
         >
           <span
             className={cn(
-              "size-6 rounded-full bg-background shadow transition-transform",
-              shown && "translate-x-5",
+              "size-5 rounded-full bg-background transition-transform",
+              shown && "translate-x-[1.375rem]",
             )}
           />
         </span>

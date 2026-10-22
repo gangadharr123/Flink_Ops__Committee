@@ -1,8 +1,10 @@
 "use client";
 
 // Dashboard charts (Recharts). Colours come from the --viz-* CSS variables
-// in globals.css. Severity and shelf condition use status colours and are
-// always named in the legend and tooltip, so colour is never the only cue.
+// in globals.css and follow the app rule: red for immediate and mould, amber
+// for dusty, grey shades for everything else. Every series is named in the
+// legend and tooltip, and each chart has a table view, so colour is never
+// the only cue.
 import {
   Bar,
   BarChart,
@@ -14,7 +16,7 @@ import {
   YAxis,
 } from "recharts";
 
-const AXIS = { fontSize: 12, fill: "var(--muted-foreground)" };
+const AXIS = { fontSize: 14, fill: "var(--muted-foreground)" };
 // Thin surface-coloured gap between touching segments, not a border.
 const GAP = { stroke: "var(--card)", strokeWidth: 2 };
 
@@ -32,14 +34,14 @@ function ChartTooltip({
 }) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="rounded-lg border bg-popover px-3 py-2 text-xs text-popover-foreground shadow-md">
+    <div className="rounded-lg border bg-popover px-4 py-2 text-sm text-popover-foreground">
       <p className="mb-1 font-medium">{label}</p>
-      <ul className="flex flex-col gap-0.5">
+      <ul className="flex flex-col gap-1">
         {payload.map((entry) => (
           <li key={String(entry.name)} className="flex items-center gap-2">
             <span className="size-2.5 rounded-sm" style={{ background: entry.color }} />
             <span className="text-muted-foreground">{entry.name}</span>
-            <span className="ml-auto pl-3 font-medium tabular-nums">{entry.value}</span>
+            <span className="ml-auto pl-4 font-medium tabular-nums">{entry.value}</span>
           </li>
         ))}
       </ul>
@@ -48,14 +50,14 @@ function ChartTooltip({
 }
 
 function legendText(value: string) {
-  return <span className="text-xs text-foreground">{value}</span>;
+  return <span className="text-sm text-foreground">{value}</span>;
 }
 
 const SEVERITY_SERIES = [
   { key: "immediate", name: "Immediate", color: "var(--viz-critical)" },
-  { key: "high", name: "High", color: "var(--viz-serious)" },
-  { key: "medium", name: "Medium", color: "var(--viz-warning)" },
-  { key: "low", name: "Low", color: "var(--viz-neutral)" },
+  { key: "high", name: "High", color: "var(--viz-grey-1)" },
+  { key: "medium", name: "Medium", color: "var(--viz-grey-2)" },
+  { key: "low", name: "Low", color: "var(--viz-grey-3)" },
 ] as const;
 
 // Open issues per hub, one horizontal bar per hub split by severity.
@@ -69,7 +71,7 @@ export function OpenBySeverityChart({
       <BarChart data={data} layout="vertical" margin={{ left: 8, right: 16 }} barCategoryGap={12}>
         <CartesianGrid horizontal={false} stroke="var(--border)" />
         <XAxis type="number" allowDecimals={false} tick={AXIS} axisLine={false} tickLine={false} />
-        <YAxis type="category" dataKey="hub" tick={AXIS} axisLine={false} tickLine={false} width={84} />
+        <YAxis type="category" dataKey="hub" tick={AXIS} axisLine={false} tickLine={false} width={96} />
         <Tooltip content={<ChartTooltip />} cursor={{ fill: "var(--muted)" }} />
         <Legend formatter={legendText} iconType="square" iconSize={10} />
         {SEVERITY_SERIES.map((s) => (
@@ -81,7 +83,7 @@ export function OpenBySeverityChart({
 }
 
 const CONDITION_SERIES = [
-  { key: "clean", name: "Clean", color: "var(--viz-good)" },
+  { key: "clean", name: "Clean", color: "var(--viz-grey-2)" },
   { key: "dusty", name: "Dusty (incl. minor dust)", color: "var(--viz-warning)" },
   { key: "mould", name: "Mould", color: "var(--viz-critical)" },
 ] as const;
@@ -126,10 +128,10 @@ export function TopTopicsChart({
           tick={AXIS}
           axisLine={false}
           tickLine={false}
-          width={130}
+          width={150}
         />
         <Tooltip content={<ChartTooltip />} cursor={{ fill: "var(--muted)" }} />
-        <Bar dataKey="visits" name="Visits raised on" fill="var(--viz-hub-1)" radius={[0, 4, 4, 0]} />
+        <Bar dataKey="visits" name="Visits raised on" fill="var(--viz-grey-1)" radius={[0, 4, 4, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -144,7 +146,8 @@ export function ResolvedPerMonthChart({
   hubs: string[];
 }) {
   const rows = data.map((m) => ({ label: m.label, ...m.counts }));
-  const colors = ["var(--viz-hub-1)", "var(--viz-hub-2)"];
+  // Hubs are not states: dark grey and light grey, named in the legend.
+  const colors = ["var(--viz-grey-1)", "var(--viz-grey-3)"];
   return (
     <ResponsiveContainer width="100%" height={260}>
       <BarChart data={rows} margin={{ left: -8, right: 8 }} barGap={2} barCategoryGap="25%">
@@ -158,7 +161,7 @@ export function ResolvedPerMonthChart({
             key={hub}
             dataKey={hub}
             name={hub}
-            fill={colors[i] ?? "var(--viz-neutral)"}
+            fill={colors[i] ?? "var(--viz-grey-2)"}
             radius={[4, 4, 0, 0]}
           />
         ))}

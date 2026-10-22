@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { FileDown, Plus } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { chipClass } from "@/components/chip-style";
+import { EmptyState } from "@/components/empty-state";
+import { openTone, StateLabel } from "@/components/state";
 import { buttonVariants } from "@/components/ui/button";
 import { getCurrentUser } from "@/lib/auth";
 import { formatDate } from "@/lib/format";
@@ -14,7 +16,7 @@ export const metadata: Metadata = { title: "Visits" };
 export default function VisitsPage({ searchParams }: PageProps<"/visits">) {
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4">
-      <h1 className="text-2xl font-semibold">Visits</h1>
+      <h1 className="text-xl font-semibold">Visits</h1>
       {/* The list reads the URL (?hub=) and the session, so it streams in. */}
       <Suspense fallback={<ListSkeleton />}>
         <VisitList searchParams={searchParams} />
@@ -52,9 +54,10 @@ async function VisitList({
       </nav>
 
       {visits.length === 0 ? (
-        <p className="rounded-xl border border-dashed p-6 text-center text-muted-foreground">
-          No visits yet.
-        </p>
+        <EmptyState>
+          {selectedHub ? `No visits at ${selectedHub} yet.` : "No visits yet."}
+          {canCreate && " Start one with New visit."}
+        </EmptyState>
       ) : (
         <ul className="flex flex-col gap-2">
           {visits.map((visit) => (
@@ -65,12 +68,12 @@ async function VisitList({
 
       {canCreate && (
         // On phones this sits above the tab bar, within thumb reach.
-        <div className="sticky bottom-[calc(5rem+env(safe-area-inset-bottom)+var(--badge-clearance))] mt-2 md:static">
+        <div className="sticky bottom-[calc(5rem+env(safe-area-inset-bottom)+var(--badge-clearance))] bg-background pt-2 md:static">
           <Link
             href="/visits/new"
             className={cn(
               buttonVariants({ size: "lg" }),
-              "h-12 w-full text-base shadow-md md:w-auto md:shadow-none",
+              "h-12 w-full text-base md:w-auto",
             )}
           >
             <Plus /> New visit
@@ -88,7 +91,7 @@ function VisitRow({ visit }: { visit: VisitListItem }) {
     <li className="flex items-stretch gap-2">
       <Link
         href={`/visits/${visit.id}`}
-        className="flex min-h-16 min-w-0 flex-1 items-center justify-between gap-3 rounded-xl border bg-card p-4 transition-colors hover:bg-muted"
+        className="flex min-h-16 min-w-0 flex-1 items-center justify-between gap-4 rounded-lg border p-4 transition-colors hover:bg-muted"
       >
         <div className="min-w-0">
           <p className="truncate font-medium">
@@ -100,12 +103,9 @@ function VisitRow({ visit }: { visit: VisitListItem }) {
             {visit.inspector?.full_name && ` · ${visit.inspector.full_name}`}
           </p>
         </div>
-        <Badge
-          variant={isDraft ? "outline" : "secondary"}
-          className={cn(isDraft && "border-amber-500 text-amber-700 dark:text-amber-400")}
-        >
+        <StateLabel tone={openTone(isDraft)} className="text-sm text-muted-foreground">
           {isDraft ? "Draft" : "Submitted"}
-        </Badge>
+        </StateLabel>
       </Link>
       {!isDraft && (
         <a
@@ -113,7 +113,7 @@ function VisitRow({ visit }: { visit: VisitListItem }) {
           download
           aria-label={`Download report for ${visit.hub.name} ${visit.label ?? `Visit ${visit.visit_number}`}`}
           title="Download report"
-          className="flex w-14 shrink-0 items-center justify-center rounded-xl border bg-card transition-colors hover:bg-muted"
+          className="flex w-14 shrink-0 items-center justify-center rounded-lg border transition-colors hover:bg-muted"
         >
           <FileDown className="size-5" />
         </a>
@@ -135,12 +135,7 @@ function FilterChip({
     <Link
       href={href}
       aria-current={active ? "page" : undefined}
-      className={cn(
-        "inline-flex h-10 items-center rounded-full border px-4 text-sm font-medium transition-colors",
-        active
-          ? "border-primary bg-primary text-primary-foreground"
-          : "bg-background hover:bg-muted",
-      )}
+      className={chipClass(active)}
     >
       {children}
     </Link>
@@ -152,7 +147,7 @@ function ListSkeleton() {
     <div className="flex flex-col gap-2">
       <div className="h-10 w-48 animate-pulse rounded-full bg-muted" />
       {[0, 1, 2].map((i) => (
-        <div key={i} className="h-16 animate-pulse rounded-xl bg-muted" />
+        <div key={i} className="h-16 animate-pulse rounded-lg bg-muted" />
       ))}
     </div>
   );

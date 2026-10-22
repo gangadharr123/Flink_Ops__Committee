@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Offline" };
 export default function OfflinePage() {
   return (
     <main className="flex min-h-svh flex-col items-center justify-center gap-4 p-6 text-center">
-      <h1 className="text-2xl font-semibold">You&apos;re offline</h1>
+      <h1 className="text-xl font-semibold">You&apos;re offline</h1>
       <p className="max-w-sm text-muted-foreground">
         This page hasn&apos;t been opened on this device yet, so it isn&apos;t available without a
         connection. Pages you opened before still work, and any visit edits are kept on this phone

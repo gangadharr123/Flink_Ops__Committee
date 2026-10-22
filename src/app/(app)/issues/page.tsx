@@ -6,10 +6,11 @@ import {
   RecurringBadge,
   SeverityBadge,
 } from "@/components/issues/issue-badges";
-import { Badge } from "@/components/ui/badge";
+import { chipClass } from "@/components/chip-style";
+import { EmptyState } from "@/components/empty-state";
+import { openTone, StateLabel } from "@/components/state";
 import { CATEGORY_LABELS, SEVERITIES } from "@/lib/issues";
 import { listIssues, type IssueFilters, type IssueListItem } from "@/lib/issues-data";
-import { cn } from "@/lib/utils";
 import { getHubs } from "@/lib/visits";
 
 export const metadata: Metadata = { title: "Issues" };
@@ -19,9 +20,9 @@ type Search = Awaited<PageProps<"/issues">["searchParams"]>;
 export default function IssuesPage({ searchParams }: PageProps<"/issues">) {
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4">
-      <h1 className="text-2xl font-semibold">Issues</h1>
+      <h1 className="text-xl font-semibold">Issues</h1>
       {/* Filters come from the URL and the list needs the session: stream both. */}
-      <Suspense fallback={<div className="h-64 animate-pulse rounded-xl bg-muted" />}>
+      <Suspense fallback={<div className="h-64 animate-pulse rounded-lg bg-muted" />}>
         <IssueList searchParams={searchParams} />
       </Suspense>
     </div>
@@ -102,9 +103,15 @@ async function IssueList({ searchParams }: { searchParams: PageProps<"/issues">[
       </p>
 
       {issues.length === 0 ? (
-        <p className="rounded-xl border border-dashed p-6 text-center text-muted-foreground">
+        <EmptyState
+          action={
+            <Link href="/issues?status=all" className={chipClass(false)}>
+              Show all issues
+            </Link>
+          }
+        >
           No issues match these filters.
-        </p>
+        </EmptyState>
       ) : (
         <ul className="flex flex-col gap-2">
           {issues.map((issue) => (
@@ -121,27 +128,33 @@ function IssueRow({ issue }: { issue: IssueListItem }) {
     <li>
       <Link
         href={`/issues/${issue.id}`}
-        className="flex flex-col gap-2 rounded-xl border bg-card p-4 transition-colors hover:bg-muted sm:flex-row sm:items-center sm:justify-between"
+        className="flex flex-col gap-1 rounded-lg border p-4 transition-colors hover:bg-muted"
       >
-        <div className="flex min-w-0 flex-col gap-1.5">
-          <p className="font-medium leading-snug">{issue.title}</p>
-          <p className="text-sm text-muted-foreground">
-            {issue.hubName} · {CATEGORY_LABELS[issue.category]}
-          </p>
-          <div className="flex flex-wrap gap-1.5">
-            <SeverityBadge severity={issue.severity} />
-            {issue.status === "resolved" && <Badge variant="secondary">Resolved</Badge>}
-            {issue.isRecurring && <RecurringBadge visits={issue.visitsSeen} />}
-            {issue.excluded && <ExcludedBadge />}
-            {issue.fromDraft && <Badge variant="outline">From a draft visit</Badge>}
-          </div>
-        </div>
-        {issue.daysOpen !== null && (
-          <p className="shrink-0 text-sm text-muted-foreground sm:text-right">
-            {issue.status === "resolved" ? "Was open" : "Open"} {issue.daysOpen}{" "}
-            day{issue.daysOpen === 1 ? "" : "s"}
-          </p>
-        )}
+        <p className="font-medium leading-snug">{issue.title}</p>
+        <p className="text-sm text-muted-foreground">
+          {issue.hubName} · {CATEGORY_LABELS[issue.category]}
+        </p>
+        {/* "● Immediate · ● Open 23 days · recurring, seen on 3 visits" */}
+        <p className="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground">
+          <SeverityBadge severity={issue.severity} />
+          <span>·</span>
+          <StateLabel tone={openTone(issue.status === "open")}>
+            {issue.status === "open" ? "Open" : "Resolved"}
+            {issue.daysOpen !== null &&
+              ` ${issue.status === "open" ? "" : "after "}${issue.daysOpen} day${issue.daysOpen === 1 ? "" : "s"}`}
+          </StateLabel>
+          {issue.isRecurring && (
+            <span>
+              · <RecurringBadge visits={issue.visitsSeen} />
+            </span>
+          )}
+          {issue.excluded && (
+            <span>
+              · <ExcludedBadge />
+            </span>
+          )}
+          {issue.fromDraft && <span>· from a draft visit</span>}
+        </p>
       </Link>
     </li>
   );
@@ -150,9 +163,9 @@ function IssueRow({ issue }: { issue: IssueListItem }) {
 function FilterRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-2">
-      <span className="w-16 shrink-0 text-xs font-medium text-muted-foreground">{label}</span>
+      <span className="w-16 shrink-0 text-sm text-muted-foreground">{label}</span>
       {/* Scrolls sideways on narrow phones instead of wrapping into many rows. */}
-      <div className="-mr-4 flex gap-2 overflow-x-auto pr-4 pb-1 md:mr-0 md:flex-wrap md:pr-0">
+      <div className="-mr-4 flex gap-2 overflow-x-auto pr-4 md:mr-0 md:flex-wrap md:pr-0">
         {children}
       </div>
     </div>
@@ -185,12 +198,7 @@ function Chip({
     <Link
       href={query ? `/issues?${query}` : "/issues"}
       aria-current={active ? "page" : undefined}
-      className={cn(
-        "inline-flex h-10 shrink-0 items-center rounded-full border px-4 text-sm font-medium whitespace-nowrap transition-colors",
-        active
-          ? "border-primary bg-primary text-primary-foreground"
-          : "bg-background hover:bg-muted",
-      )}
+      className={chipClass(active)}
     >
       {children}
     </Link>

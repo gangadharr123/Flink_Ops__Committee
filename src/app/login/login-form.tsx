@@ -19,7 +19,7 @@ export function LoginForm() {
 
   if (state.status === "sent") {
     return (
-      <p className="rounded-lg bg-muted p-4 text-sm" role="status">
+      <p className="rounded-lg border p-4 text-sm" role="status">
         {state.message} Open it on this device to log in.
       </p>
     );

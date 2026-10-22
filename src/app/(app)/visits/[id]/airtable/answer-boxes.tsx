@@ -116,7 +116,7 @@ function AnswerBox({
         <Label htmlFor={id} className="text-base font-semibold">
           {label}
         </Label>
-        <span className="text-xs text-muted-foreground" aria-live="polite">
+        <span className="text-sm text-muted-foreground" aria-live="polite">
           {status === "saving" && "Saving..."}
           {status === "saved" && "Saved"}
           {status === "error" && <span className="text-destructive">{error}</span>}
@@ -133,7 +133,7 @@ function AnswerBox({
         className="min-h-32 text-base leading-relaxed"
       />
       <div className="flex gap-2">
-        <Button type="button" onClick={copy} className="h-11 flex-1 text-base sm:flex-none sm:px-6">
+        <Button type="button" variant="outline" onClick={copy} className="h-11 flex-1 text-base sm:flex-none sm:px-6">
           {copied ? <Check /> : <Copy />}
           {copied ? "Copied" : "Copy"}
         </Button>

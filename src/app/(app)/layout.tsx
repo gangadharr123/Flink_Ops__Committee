@@ -11,18 +11,20 @@ import {
 export default function AppLayout({ children }: LayoutProps<"/">) {
   return (
     <div className="flex min-h-svh">
-      <aside className="sticky top-0 hidden h-svh w-60 shrink-0 flex-col border-r bg-sidebar p-4 md:flex">
-        <p className="mb-6 px-3 text-lg font-semibold">HubCheck</p>
+      <aside className="sticky top-0 hidden h-svh w-60 shrink-0 flex-col gap-6 border-r py-6 pr-4 md:flex print:hidden">
+        <p className="px-4 text-xl font-semibold">HubCheck</p>
         <nav aria-label="Main" className="flex-1">
           <NavLinks variant="sidebar" />
         </nav>
-        <Suspense fallback={<UserMenuSkeleton />}>
-          <UserMenu />
-        </Suspense>
+        <div className="pl-4">
+          <Suspense fallback={<UserMenuSkeleton />}>
+            <UserMenu />
+          </Suspense>
+        </div>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-10 flex h-14 items-center justify-between border-b bg-background px-4 md:hidden">
+        <header className="sticky top-0 z-10 flex h-14 items-center justify-between border-b bg-background px-4 md:hidden print:hidden">
           <p className="font-semibold">HubCheck</p>
           <Suspense fallback={<div className="size-8" />}>
             <UserMenu compact />
@@ -32,7 +34,7 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
         {/* Bottom padding keeps content clear of the phone tab bar or the
             visit editor's Back / Next bar (5rem, on laptops too), the iPhone
             home indicator, and the Netlify badge. */}
-        <main className="flex-1 p-4 pb-[calc(5rem+env(safe-area-inset-bottom)+var(--badge-clearance))] md:p-8 md:pb-[calc(5rem+var(--badge-clearance))]">
+        <main className="flex-1 p-4 pb-[calc(5rem+env(safe-area-inset-bottom)+var(--badge-clearance))] md:p-8 md:pb-[calc(5rem+var(--badge-clearance))] print:p-0">
           {children}
         </main>
       </div>

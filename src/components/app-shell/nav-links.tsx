@@ -64,7 +64,7 @@ function BottomBar({ pathname }: { pathname: string | null }) {
     <nav
       aria-label="Main"
       // Bottom padding: iPhone home indicator + room for the Netlify badge.
-      className="fixed inset-x-0 bottom-0 z-10 border-t bg-background pb-[calc(env(safe-area-inset-bottom)+var(--badge-clearance))] md:hidden"
+      className="fixed inset-x-0 bottom-0 z-10 border-t bg-background pb-[calc(env(safe-area-inset-bottom)+var(--badge-clearance))] md:hidden print:hidden"
     >
       <LinkList variant="bottom" pathname={pathname} />
     </nav>
@@ -83,7 +83,7 @@ function LinkList({
   return (
     <ul
       className={cn(
-        variant === "sidebar" ? "flex flex-col gap-1" : "grid grid-cols-4",
+        variant === "sidebar" ? "flex flex-col gap-2" : "grid grid-cols-4",
       )}
     >
       {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
@@ -96,13 +96,15 @@ function LinkList({
               className={cn(
                 "transition-colors",
                 variant === "sidebar"
-                  ? "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium"
-                  : "flex h-16 flex-col items-center justify-center gap-1 text-xs",
+                  ? "flex min-h-10 items-center gap-2 border-l-2 px-4 text-sm"
+                  : "flex h-16 flex-col items-center justify-center gap-1 text-sm",
+                // Active: a thin line on the left (sidebar) or bold label (tab bar).
                 active
-                  ? variant === "sidebar"
-                    ? "bg-muted text-foreground"
-                    : "text-foreground"
-                  : "text-muted-foreground hover:text-foreground",
+                  ? cn("font-medium text-foreground", variant === "sidebar" && "border-foreground")
+                  : cn(
+                      "text-muted-foreground hover:text-foreground",
+                      variant === "sidebar" && "border-transparent",
+                    ),
               )}
             >
               <Icon className="size-5" aria-hidden />

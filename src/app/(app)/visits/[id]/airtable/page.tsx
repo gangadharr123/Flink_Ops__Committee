@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { loadAirtableAnswers } from "@/lib/airtable/load";
 import { getCurrentUser } from "@/lib/auth";
+import { StateDot } from "@/components/state";
 import { formatDate } from "@/lib/format";
 import { AnswerBoxes } from "./answer-boxes";
 
@@ -13,7 +14,7 @@ export const metadata: Metadata = { title: "Airtable answers" };
 export default function AirtablePage({ params }: PageProps<"/visits/[id]/airtable">) {
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-4">
-      <Suspense fallback={<div className="h-96 animate-pulse rounded-xl bg-muted" />}>
+      <Suspense fallback={<div className="h-96 animate-pulse rounded-lg bg-muted" />}>
         <Answers params={params} />
       </Suspense>
     </div>
@@ -37,13 +38,14 @@ async function Answers({ params }: { params: PageProps<"/visits/[id]/airtable">[
         <ChevronLeft className="size-4" /> Back to visit
       </Link>
       <header>
-        <h1 className="text-2xl font-semibold">Airtable answers</h1>
+        <h1 className="text-xl font-semibold">Airtable answers</h1>
         <p className="text-muted-foreground">
           {data.visit.hubName} · {data.visit.label} · {formatDate(data.visit.visitDate)}
         </p>
       </header>
       {data.visit.status === "draft" && (
-        <p className="rounded-lg border border-amber-500/50 bg-amber-500/10 p-3 text-sm text-amber-900 dark:text-amber-200">
+        <p className="flex items-center gap-2 text-sm">
+          <StateDot tone="warning" />
           This visit is still a draft. The answers will change as you finish it.
         </p>
       )}

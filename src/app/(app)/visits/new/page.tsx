@@ -10,9 +10,9 @@ export const metadata: Metadata = { title: "New visit" };
 export default function NewVisitPage() {
   return (
     <div className="mx-auto flex max-w-md flex-col gap-6">
-      <h1 className="text-2xl font-semibold">New visit</h1>
+      <h1 className="text-xl font-semibold">New visit</h1>
       <Suspense
-        fallback={<div className="h-64 animate-pulse rounded-xl bg-muted" />}
+        fallback={<div className="h-64 animate-pulse rounded-lg bg-muted" />}
       >
         <NewVisit />
       </Suspense>

@@ -90,7 +90,7 @@ export function ActionBar({
             onClick={onSubmit}
             disabled={!online}
             title={online ? undefined : "Needs a connection"}
-            className="h-12 justify-self-end px-5 text-base"
+            className="h-12 justify-self-end px-4 text-base"
           >
             Submit
           </Button>

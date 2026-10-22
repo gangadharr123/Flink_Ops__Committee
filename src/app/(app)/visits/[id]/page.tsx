@@ -46,7 +46,7 @@ function EditorSkeleton() {
     <div className="mx-auto flex max-w-5xl flex-col gap-4">
       <div className="h-12 animate-pulse rounded-lg bg-muted" />
       <div className="h-8 animate-pulse rounded-lg bg-muted" />
-      <div className="h-96 animate-pulse rounded-xl bg-muted" />
+      <div className="h-96 animate-pulse rounded-lg bg-muted" />
     </div>
   );
 }

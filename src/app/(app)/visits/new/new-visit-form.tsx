@@ -24,7 +24,7 @@ export function NewVisitForm({
     <form action={formAction} className="flex flex-col gap-6">
       <fieldset className="flex flex-col gap-2">
         <legend className="mb-2 text-sm font-medium">Hub</legend>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-4">
           {hubs.map((hub) => (
             <button
               key={hub.id}
@@ -32,10 +32,10 @@ export function NewVisitForm({
               aria-pressed={hubId === hub.id}
               onClick={() => setHubId(hub.id)}
               className={cn(
-                "h-16 rounded-xl border text-base font-medium transition-colors",
+                "h-16 rounded-lg border text-base transition-colors",
                 hubId === hub.id
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "bg-card hover:bg-muted",
+                  ? "border-foreground font-semibold"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
               {hub.name}

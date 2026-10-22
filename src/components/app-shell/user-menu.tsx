@@ -14,7 +14,7 @@ export async function UserMenu({ compact = false }: { compact?: boolean }) {
       {!compact && (
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium">{name}</p>
-          <p className="text-xs capitalize text-muted-foreground">
+          <p className="text-sm capitalize text-muted-foreground">
             {user.role ?? "no role"}
           </p>
         </div>
